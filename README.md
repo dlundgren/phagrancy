@@ -5,8 +5,13 @@ publish them and then share the images with your co-workers via Vagrant, all on-
 
 #### Configuration
 
-Create a `.env` and specify the `storage_path`. If this path is not absolute then the base
-path to the app will be used. The default is `data/storage`.
+Create a `.env` and specify the options
+
+Option| Description 
+------|-------------
+**storage_path** | Path to the box storage. Default is `data/storage`. Relative paths will be made absolute using the app root.
+**api_token** | Token required to access the API.
+**access_password** | Password for accessing the frontend. Any username is accepted 
 
 ### Publishing images
 ##### Via Packer

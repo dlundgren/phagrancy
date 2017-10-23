@@ -8,6 +8,7 @@
 namespace Phagrancy\ServiceProvider;
 
 use josegonzalez\Dotenv\Loader;
+use Phagrancy\Http\Middleware;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Phagrancy\Action;
@@ -42,7 +43,19 @@ class Pimple
 			$this->env = $envLoader->toArray();
 		}
 
+		$di['env']          = $this->env;
 		$di['path.storage'] = $this->resolveStoragePath();
+
+		// Authorization middleware
+		$di[Middleware\ValidateAccessToken::class] = function ($c) {
+			return new Middleware\ValidateAccessToken(isset($c['env']['api_token']) ? $c['env']['api_token'] : '');
+		};
+
+		$di[Middleware\ValidatePassword::class] = function ($c) {
+			return new Middleware\ValidatePassword(
+				isset($c['env']['access_password']) ? $c['env']['access_password'] : '',
+				isset($c['env']['login_secure_only']));
+		};
 
 		// register repositories
 		$di[Repository\Scope::class] = function ($c) {
