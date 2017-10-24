@@ -17,13 +17,11 @@ $app->group('/api/v1/box/{scope}', function () {
 	$this->group('/{name}', function () {
 		$this->get('', Action\Api\Scope\Box\Definition::class);
 		$this->post('/versions', Action\Api\Scope\Box\CreateVersion::class);
-		$this->group(
-			'/version/{version}', function () {
+		$this->group('/version/{version:\d+\.\d+(?:\.\d+.*)}', function () {
 			$this->post('', Action\AllClear::class);
 			$this->post('/providers', Action\Api\Scope\Box\CreateProvider::class);
 			$this->put('/release', Action\AllClear::class);
-			$this->group(
-				'/provider/{provider}', function () {
+			$this->group('/provider/{provider}', function () {
 				$this->get('', Action\Api\Scope\Box\SendFile::class);
 				$this->delete('', Action\AllClear::class);
 				$this->get('/upload', Action\Api\Scope\Box\UploadPreFlight::class);
