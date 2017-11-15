@@ -18,7 +18,6 @@ $app->group('/api/v1/box/{scope}', function () {
 		$this->get('', Action\Api\Scope\Box\Definition::class);
 		$this->post('/versions', Action\Api\Scope\Box\CreateVersion::class);
 		$this->group('/version/{version:\d+\.\d+(?:\.\d+.*)}', function () {
-			$this->post('', Action\AllClear::class);
 			$this->post('/providers', Action\Api\Scope\Box\CreateProvider::class);
 			$this->put('/release', Action\AllClear::class);
 			$this->group('/provider/{provider}', function () {
