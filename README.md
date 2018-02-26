@@ -3,6 +3,15 @@
 Phagrancy implements a self-hosted subset of Vagrant Cloud. It allows you to build images in Packer, 
 publish them and then share the images with your co-workers via Vagrant, all on-premise.
 
+#### Installation
+
+```
+cd /srv/www
+git clone https://github.com/dlundgren/phagrancy.git phagrancy
+cd phagrancy
+mkdir -p data/storage
+```
+
 #### Configuration
 
 Create a `.env` and specify the options
@@ -39,7 +48,7 @@ Add something like the following to your `.json` Packer file. For Packer version
 ##### Manually uploading
 You can easily upload a box you have built locally using `curl`.
 ```
-curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload --upload-file ubuntu-precise.box
+curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload?access_token=<token> --upload-file ubuntu-precise.box
 ```
 
 ### Using in Vagrant
@@ -54,8 +63,8 @@ end
 ### API
 Operation| Command 
 ---------|----------
-**Deleting a box** | `curl -XDELETE http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox`
-**Manually uploading a box** | `curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload --upload-file ubuntu-precise.box`
+**Deleting a box** | `curl -XDELETE http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox?access_token=<token>`
+**Manually uploading a box** | `curl -XPUT http://localhost:8099/api/v1/box/myusername/ubuntu/version/1.0.0/provider/virtualbox/upload?access_token=<token> --upload-file ubuntu-precise.box`
 **Listing box versions** | `curl http://localhost:8099/myusername/ubuntu`
 **Deleting all box versions** | *Each box must be specifically deleted*
 
