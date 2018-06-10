@@ -7,11 +7,11 @@
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
-use Phagrancy\Http\Response;
-use Phagrancy\Model\Entity;
+use Phagrancy\Http\Response\NotFound;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Http\Headers;
 use Slim\Http\Stream;
 
 /**
@@ -34,14 +34,13 @@ class SendFile
 	/**
 	 * @var Input\BoxUpload
 	 */
-	private $validator;
+	private $input;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $validator, $uploadPath, $useNginxAccelRedirect)
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
 	{
-		$this->boxes                 = $boxes;
-		$this->validator             = $validator;
-		$this->uploadPath            = $uploadPath;
-		$this->useNginxAccelRedirect = $useNginxAccelRedirect;
+		$this->boxes      = $boxes;
+		$this->input      = $input;
+		$this->uploadPath = $uploadPath;
 	}
 
 	public function __invoke(ServerRequestInterface $request)
@@ -54,26 +53,24 @@ class SendFile
 		 * @var string $version
 		 * @var string $provider
 		 */
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
+		$params = $this->input->validate($request->getAttribute('route')->getArguments());
 		extract($params);
-		$box = $this->boxes->ofNameInScope($name, $scope);
-		$response = new Response\NotFound("Box not found: {$box->path()}");
-		$path = "/{$box->path()}/{$version}/{$provider}.box";
+		$box      = $this->boxes->ofNameInScope($name, $scope);
+		$response = new NotFound();
+		$path     = "/{$box->path()}/{$version}/{$provider}.box";
 
 		if ($box && file_exists("{$this->uploadPath}{$path}")) {
-			if (file_exists)
-			$response = new \Slim\Http\Response();
-			$response = $response->header('Cache-control', 'must-revalidate');
-			$response = $response->header('Expires', 0);
-			$response = $response->header('Content-Type', 'application/octet-stream');
-			$response = $response->header('Content-Disposition', 'attachment; filename="' . "{$box->name()}-{$provider}-{$version}.box" . '"');
-
-//			if ($this->useNginxAccelRedirect) {
-//				$response = $response->header('X-Accel-Redirect', $path);
-//			}
-//			else {
-				$response = $response->withBody(new Stream(fopen("{$this->uploadPath}{$path}", 'rb')));
-//			}
+			$response = new \Slim\Http\Response(
+				200,
+				new Headers(
+					[
+						'Cache-Control'       => "must-revalidate",
+						'Expires'             => 0,
+						'Content-Type'        => 'application/octet-stream',
+						'Content-Disposition' => 'attachment; filename="' . "{$box->name()}-{$provider}-{$version}.box" . '"'
+					]),
+				new Stream(fopen("{$this->uploadPath}{$path}", 'rb'))
+			);
 		}
 
 		return $response;

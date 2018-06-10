@@ -2,3 +2,5 @@
 vendor/
 data/
 .env
+composer.lock
+phpunit.xml

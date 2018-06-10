@@ -7,6 +7,11 @@ class IdentityMap
 	private static $alias = [];
 	private static $map = [];
 
+	/**
+	 * Prevents the identitymap from being instantiated
+	 *
+	 * @codeCoverageIgnore
+	 */
 	private function __construct()
 	{
 	}

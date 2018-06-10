@@ -6,8 +6,7 @@
  */
 
 namespace Phagrancy\Action;
-
-use Psr\Http\Message\ResponseInterface;
+use Phagrancy\Http\Response\Json;
 
 /**
  * Sends a generic 200 Response
@@ -16,8 +15,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AllClear
 {
-	public function __invoke($request, ResponseInterface $response)
+	public function __invoke()
 	{
-		return new \Slim\Http\Response();
+		return new Json();
 	}
 }

@@ -27,19 +27,23 @@ class Index
 	/**
 	 * @var Input\Scope
 	 */
-	private $validator;
+	private $input;
 
-	public function __construct(Repository\Scope $repository, Input\Scope $validator)
+	public function __construct(Repository\Scope $repository, Input\Scope $input)
 	{
 		$this->repository = $repository;
-		$this->validator  = $validator;
+		$this->input      = $input;
 	}
 
 	public function __invoke(ServerRequestInterface $request)
 	{
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
-		$user   = $this->repository->ofName($params['scope']);
+		$params = $this->input->validate($request->getAttribute('route')->getArguments());
+		$scope   = $this->repository->ofName($params['scope']);
 
-		return new Response\BoxList($user);
+		if (!$scope) {
+			return new Response\NotFound();
+		}
+
+		return new Response\Api\BoxList($scope);
 	}
 }

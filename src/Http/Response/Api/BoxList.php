@@ -7,10 +7,8 @@
 
 namespace Phagrancy\Http\Response\Api;
 
-use Phagrancy\Http\Response\RespondsWithJson;
+use Phagrancy\Http\Response\Json;
 use Phagrancy\Model\Entity;
-use Slim\Http\Headers;
-use Slim\Http\Response;
 
 /**
  * Box JSON list response
@@ -18,13 +16,11 @@ use Slim\Http\Response;
  * @package Phagrancy\Http\Response\Api
  */
 class BoxList
-	extends Response
+	extends Json
 {
-	use RespondsWithJson;
-
 	public function __construct(Entity\Scope $scope)
 	{
-		$this->constructResponse(
+		parent::__construct(
 			[
 				'username' => $scope->name(),
 				'boxes'    => $scope->boxes()

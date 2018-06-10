@@ -8,9 +8,7 @@
 namespace Phagrancy\Http\Response;
 
 use Phagrancy\Model\Entity;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Slim\Http\Response;
 
 /**
  * Box JSON definition response
@@ -18,10 +16,8 @@ use Slim\Http\Response;
  * @package Phagrancy\Http\Response
  */
 class BoxDefinition
-	extends Response
+	extends Json
 {
-	use RespondsWithJson;
-
 	public function __construct(Entity\Box $box, UriInterface $uri)
 	{
 		$json = [
@@ -44,6 +40,7 @@ class BoxDefinition
 				'providers' => $vpbs
 			];
 		}
-		$this->constructResponse($json);
+
+		parent::__construct($json);
 	}
 }

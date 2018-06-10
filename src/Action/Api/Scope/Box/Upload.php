@@ -2,13 +2,12 @@
 
 /**
  * @file
- * Contains Phagrancy\Action\Api\Scope\Box\Definition
+ * Contains Phagrancy\Action\Api\Scope\Box\Upload
  */
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Entity;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,12 +32,12 @@ class Upload
 	/**
 	 * @var Input\BoxUpload
 	 */
-	private $validator;
+	private $input;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $validator, $uploadPath)
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
 	{
 		$this->boxes      = $boxes;
-		$this->validator  = $validator;
+		$this->input      = $input;
 		$this->uploadPath = $uploadPath;
 	}
 
@@ -52,28 +51,32 @@ class Upload
 		 * @var string $version
 		 * @var string $provider
 		 */
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
+		$params = $this->input->validate($request->getAttribute('route')->getArguments());
 		extract($params);
 		$box = $this->boxes->ofNameInScope($name, $scope);
 		if ($box) {
-			// we need to upload the file
+			if (!file_exists("{$this->uploadPath}/tmp")) {
+				mkdir("{$this->uploadPath}/tmp", 0755, true);
+			}
+			$tmp = tempnam("{$this->uploadPath}/tmp", 'phagrancy');
+
 			$request->getBody()->detach();
 			$from = fopen("php://input", 'r');
+			$to   = fopen($tmp, 'w');
 
-			mkdir("{$this->uploadPath}/tmp", 0755, true);
-			$tmp = tempnam("{$this->uploadPath}/tmp", 'phagrancy');
-			$to  = fopen($tmp, 'w');
 			stream_copy_to_stream($from, $to);
 			fclose($from);
 			fclose($to);
 
 			// make sure it exists
 			$path = "{$this->uploadPath}/{$box->path()}/{$version}/";
-			mkdir($path, 0755, true);
+			if (!file_exists($path)) {
+				mkdir($path, 0755, true);
+			}
 
 			rename($tmp, "$path/{$provider}.box");
 		}
 
-		return new \Slim\Http\Response();
+		return new Response\Json([]);
 	}
 }

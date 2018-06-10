@@ -8,7 +8,6 @@
 namespace Phagrancy\Action\Scope\Box;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Entity;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,13 +34,13 @@ class SendFile
 	/**
 	 * @var Input\BoxUpload
 	 */
-	private $validator;
+	private $input;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $validator, $uploadPath)
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
 	{
-		$this->boxes                 = $boxes;
-		$this->validator             = $validator;
-		$this->uploadPath            = $uploadPath;
+		$this->boxes      = $boxes;
+		$this->input      = $input;
+		$this->uploadPath = $uploadPath;
 	}
 
 	public function __invoke(ServerRequestInterface $request)
@@ -54,7 +53,7 @@ class SendFile
 		 * @var string $version
 		 * @var string $provider
 		 */
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
+		$params = $this->input->validate($request->getAttribute('route')->getArguments());
 		extract($params);
 		$box      = $this->boxes->ofNameInScope($name, $scope);
 		$path     = "/{$box->path()}/{$version}/{$provider}.box";

@@ -2,11 +2,16 @@
 
 /**
  * @file
- * Contains Phagrancy\Action\Api\Scope\Box\Definition
+ * Contains Phagrancy\Action\Api\Scope\Box\ReturnsUrlForBox
  */
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
+/**
+ * Utility function for creating a url for a box
+ *
+ * @package Phagrancy\Action\Api\Scope\Box
+ */
 trait ReturnsUrlForBox
 {
 	protected function createUrlFromRouteParams($params)

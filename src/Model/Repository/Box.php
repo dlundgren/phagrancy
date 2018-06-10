@@ -33,7 +33,7 @@ class Box
 		foreach (new \FilesystemIterator($dir) as $path => $file) {
 			/** @var $file \SplFileInfo */
 			if ($file->isDir()) {
-				$versions[$file->getBasename()] = $this->loadProviders($file->getRealPath());
+				$versions[$file->getBasename()] = $this->loadProviders($file->getPathname());
 			}
 		}
 
