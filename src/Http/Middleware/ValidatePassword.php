@@ -38,7 +38,7 @@ class ValidatePassword
 		}
 
 		$ary  = explode(':', $request->getUri()->getUserInfo());
-		$pass = $ary[1] ?? null;
+		$pass = isset($ary[1]) ? $ary[1] : null;
 
 		if ($this->password === $pass) {
 			return $next($request, $response);
