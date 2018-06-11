@@ -25,6 +25,8 @@ class Json
 
 		parent::__construct($code, $responseHeaders);
 
-		$this->getBody()->write(json_encode($json));
+		if ($json !== null) {
+			$this->getBody()->write(json_encode($json));
+		}
 	}
 }
