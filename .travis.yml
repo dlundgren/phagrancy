@@ -22,6 +22,10 @@ matrix:
 install:
   - travis_retry composer install
 
+before_script:
+  - echo 'opcache.enable=0' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo 'opcache.enable_cli=0' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
 script:
   - if [ "$TRAVIS_PHP_VERSION" != "7.2" ]; then composer test; fi
   - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then composer test-coverage; fi
