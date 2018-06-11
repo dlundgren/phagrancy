@@ -43,5 +43,7 @@ class UploadTest
 		self::assertEquals('uploading', file_get_contents($this->fs->url() . '/test/upload/1.0/test.box'));
 		self::assertInstanceOf(Json::class, $response);
 		self::assertResponseHasStatus($response, 200);
+
+		$response->getBody()->close();
 	}
 }

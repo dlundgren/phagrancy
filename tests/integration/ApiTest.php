@@ -97,9 +97,6 @@ class ApiTest
 	{
 		$response = $this->runApp($method, "/api/v1/box/{$path}");
 
-		if (!($response instanceof $responseClass)) {
-			var_dump($response);
-		}
 		self::assertInstanceOf($responseClass, $response);
 		self::assertResponseHasStatus($response, 200);
 		self::assertMessageBodyEqualsJsonArray($response, $expected);
@@ -182,6 +179,8 @@ class ApiTest
 		self::assertInstanceOf(Response\Json::class, $response);
 		self::assertMessageBodyEqualsJsonArray($response, []);
 		self::assertEquals('upload-data', file_get_contents($this->fs->url() . '/data/storage/test/something/1.0.0/virtualtest.box'));
+
+		$response->getBody()->close();
 	}
 
 	public function testUploadReturnsNotFound()
