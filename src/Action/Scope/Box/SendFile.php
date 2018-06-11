@@ -54,27 +54,16 @@ class SendFile
 		 * @var string $provider
 		 */
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
+		if (!$params) {
+			return new Response\NotFound();
+		}
+
 		extract($params);
-		$box      = $this->boxes->ofNameInScope($name, $scope);
-		$path     = "/{$box->path()}/{$version}/{$provider}.box";
+		$box  = $this->boxes->ofNameInScope($name, $scope);
+		$file = "{$this->uploadPath}/{$box->path()}/{$version}/{$provider}.box";
 
-		if ($box && file_exists("{$this->uploadPath}{$path}")) {
-			$response = new \Slim\Http\Response(
-				200,
-				new Headers(
-					[
-						'Cache-Control'       => "must-revalidate",
-						'Expires'             => 0,
-						'Content-Type'        => 'application/octet-stream',
-						'Content-Disposition' => 'attachment; filename="' . "{$box->name()}-{$provider}-{$version}.box" . '"'
-					]),
-				new Stream(fopen("{$this->uploadPath}{$path}", 'rb'))
-			);
-		}
-		else {
-			$response = new Response\NotFound();
-		}
-
-		return $response;
+		return ($box && file_exists($file))
+			? new Response\SendBoxFile($box, $version, $provider, $file)
+			: new Response\NotFound();
 	}
 }

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Http\Middleware\ValidateAccessTokenTest
+ */
+
 namespace Phagrancy\Http\Middleware;
 
 use Phagrancy\Http\Response\Json;

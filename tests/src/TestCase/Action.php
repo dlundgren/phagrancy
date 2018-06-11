@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * @file
+ * Contains Phagrancy\TestCase\Action
+ */
+
 namespace Phagrancy\TestCase;
 
 use Helmich\Psr7Assert\Psr7Assertions;
@@ -10,6 +16,11 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Route;
 
+/**
+ * Abstract TestCase
+ *
+ * @package Phagrancy\TestCase
+ */
 abstract class Action
 	extends TestCase
 {

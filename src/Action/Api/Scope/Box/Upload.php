@@ -52,6 +52,10 @@ class Upload
 		 * @var string $provider
 		 */
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
+		if (!$params) {
+			return new Response\NotFound();
+		}
+
 		extract($params);
 		$box = $this->boxes->ofNameInScope($name, $scope);
 		if ($box) {

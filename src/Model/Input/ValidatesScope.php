@@ -1,9 +1,22 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Model\Input\ValidatesScope
+ */
+
 namespace Phagrancy\Model\Input;
 
+/**
+ * Scope Validator
+ *
+ * @package Phagrancy\Model\Input
+ */
 trait ValidatesScope
 {
+	/**
+	 * @var array List of rules for the scope
+	 */
 	private static $SCOPE_RULE = ['required', 'trim', 'to_lc', 'scope'];
 
 	/**

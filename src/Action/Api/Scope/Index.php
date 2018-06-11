@@ -38,8 +38,11 @@ class Index
 	public function __invoke(ServerRequestInterface $request)
 	{
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		$scope   = $this->repository->ofName($params['scope']);
+		if (!$params) {
+			return new Response\NotFound();
+		}
 
+		$scope   = $this->repository->ofName($params['scope']);
 		if (!$scope) {
 			return new Response\NotFound();
 		}

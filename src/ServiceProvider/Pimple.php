@@ -15,6 +15,11 @@ use Phagrancy\Action;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
+/**
+ * Pimple Container Service Provider
+ *
+ * @package Phagrancy\ServiceProvider
+ */
 class Pimple
 	implements ServiceProviderInterface
 {
@@ -90,6 +95,10 @@ class Pimple
 
 		$di[Action\Api\Scope\Box\Upload::class] = function ($c) {
 			return new Action\Api\Scope\Box\Upload($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
+		};
+
+		$di[Action\Api\Scope\Box\SendFile::class] = function ($c) {
+			return new Action\Api\Scope\Box\SendFile($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
 		};
 	}
 

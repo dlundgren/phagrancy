@@ -23,6 +23,9 @@ class CreateVersion
 	public function __invoke(ServerRequestInterface $request)
 	{
 		$data = $request->getParsedBody();
+		if (empty($data)) {
+			return new Response\BadRequest('No version supplied');
+		}
 
 		return new Response\Json($data['version']);
 	}

@@ -38,7 +38,11 @@ class Definition
 	public function __invoke(ServerRequestInterface $request)
 	{
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		$box    = $this->boxes->ofNameInScope($params['name'], $params['scope']);
+		if (!$params) {
+			return new Response\NotFound();
+		}
+
+		$box = $this->boxes->ofNameInScope($params['name'], $params['scope']);
 
 		return new Response\BoxDefinition($box, $request->getUri());
 	}

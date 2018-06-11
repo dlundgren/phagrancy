@@ -9,6 +9,7 @@ namespace Phagrancy\Http\Response\Api;
 
 use Phagrancy\Http\Response\Json;
 use Phagrancy\Model\Entity;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Box JSON definition response
@@ -18,7 +19,7 @@ use Phagrancy\Model\Entity;
 class BoxDefinition
 	extends Json
 {
-	public function __construct(Entity\Box $box, $uri)
+	public function __construct(Entity\Box $box, UriInterface $uri)
 	{
 		$json = [
 			'tag'      => $box->path(),
@@ -32,7 +33,7 @@ class BoxDefinition
 			foreach ($providers as $provider) {
 				$vpbs[] = [
 					'name' => $provider,
-					'url'  => (string)$uri->withPath("/api/v1/box/{$box->path()}/{$version}/{$provider}")
+					'url'  => (string)$uri->withPath("/api/v1/box/{$box->path()}/version/{$version}/provider/{$provider}")
 				];
 			}
 			$json['versions'][] = [

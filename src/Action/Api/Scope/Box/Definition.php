@@ -15,6 +15,9 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Action to return the box definition
  *
+ * @NOTE because we do not allow "creation" of scopes/boxes, we MUST return a valid Box Definition, otherwise packer
+ *       will croak
+ *
  * @package Phagrancy\Action\Api\Scope\Box
  */
 class Definition
@@ -38,6 +41,10 @@ class Definition
 	public function __invoke(ServerRequestInterface $request)
 	{
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
+		if (!$params) {
+			return new Response\NotFound();
+		}
+
 		$box    = $this->boxes->ofNameInScope($params['name'], $params['scope']);
 
 		return new Response\Api\BoxDefinition($box, $request->getUri());

@@ -7,12 +7,10 @@
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
-use Phagrancy\Http\Response\NotFound;
+use Phagrancy\Http\Response;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Headers;
-use Slim\Http\Stream;
 
 /**
  * Action for sending a file to the requester
@@ -54,25 +52,16 @@ class SendFile
 		 * @var string $provider
 		 */
 		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		extract($params);
-		$box      = $this->boxes->ofNameInScope($name, $scope);
-		$response = new NotFound();
-		$path     = "/{$box->path()}/{$version}/{$provider}.box";
-
-		if ($box && file_exists("{$this->uploadPath}{$path}")) {
-			$response = new \Slim\Http\Response(
-				200,
-				new Headers(
-					[
-						'Cache-Control'       => "must-revalidate",
-						'Expires'             => 0,
-						'Content-Type'        => 'application/octet-stream',
-						'Content-Disposition' => 'attachment; filename="' . "{$box->name()}-{$provider}-{$version}.box" . '"'
-					]),
-				new Stream(fopen("{$this->uploadPath}{$path}", 'rb'))
-			);
+		if (!$params) {
+			return new Response\NotFound();
 		}
 
-		return $response;
+		extract($params);
+		$box  = $this->boxes->ofNameInScope($name, $scope);
+		$file = "{$this->uploadPath}/{$box->path()}/{$version}/{$provider}.box";
+
+		return ($box && file_exists($file))
+			? new Response\SendBoxFile($box, $version, $provider, $file)
+			: new Response\NotFound();
 	}
 }

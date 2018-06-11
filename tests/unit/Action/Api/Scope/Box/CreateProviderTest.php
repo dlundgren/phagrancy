@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\CreateProviderTest
+ */
+
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response\Json;

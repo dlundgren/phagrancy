@@ -23,6 +23,10 @@ class CreateProvider
 	{
 		$uri  = $request->getUri();
 		$data = $request->getParsedBody();
+		if (empty($data)) {
+			return new Response\BadRequest('No provider supplied');
+		}
+
 		$json = $data['provider'];
 
 		// @TODO pass this through the validator

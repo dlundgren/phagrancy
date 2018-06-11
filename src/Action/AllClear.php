@@ -6,6 +6,7 @@
  */
 
 namespace Phagrancy\Action;
+
 use Phagrancy\Http\Response\Json;
 
 /**

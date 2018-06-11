@@ -1,20 +1,16 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\UploadTest
+ */
+
 namespace Phagrancy\Action\Api\Scope\Box;
 
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 use Phagrancy\Http\Response\Json;
 use Phagrancy\Model\Input\BoxUpload;
 use Phagrancy\Model\Repository\Box;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
-use Slim\Http\Stream;
-use Slim\Tests\Http\BodyTest;
-
-// due to an issue with tempnam not working with vfs' we need to make it work
-function tempnam($path, $name) {
-	return "{$path}/{$name}";
-}
 
 class UploadTest
 	extends ScopeTestCase
@@ -33,7 +29,6 @@ class UploadTest
 						'version'  => '1.0',
 						'provider' => 'test'
 					]);
-
 
 		// build the action itself
 		$action = new Upload(

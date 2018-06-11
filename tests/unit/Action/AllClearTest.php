@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\AllClearTest
+ */
+
 namespace Phagrancy\Action;
 
 use Helmich\Psr7Assert\Psr7Assertions;

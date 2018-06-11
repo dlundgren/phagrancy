@@ -1,17 +1,35 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Model\Repository\Scope
+ */
+
 namespace Phagrancy\Model\Repository;
 
 use Phagrancy\Model\Entity;
 
+/**
+ * Repository for the Scopes
+ *
+ * @package Phagrancy\Model\Repository
+ */
 class Scope
 {
+	/**
+	 * @var string The path to the scopes
+	 */
 	private $path;
+
 	public function __construct($path)
 	{
 		$this->path = $path;
 	}
 
+	/**
+	 * @param string $name The name of the scope to find
+	 * @return mixed|null|Entity\Scope The scope
+	 */
 	public function ofName($name)
 	{
 		if (empty($name)) {
@@ -38,5 +56,4 @@ class Scope
 
 		return $scope;
 	}
-
 }

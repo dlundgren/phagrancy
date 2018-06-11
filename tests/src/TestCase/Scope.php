@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\TestCase\Scope
+ */
+
 namespace Phagrancy\TestCase;
 
 use org\bovigo\vfs\vfsStream;
+use Phagrancy\Model\Repository\IdentityMap;
 use PHPUnit\Framework\Assert;
 use Psr\Http\Message\ResponseInterface;
 
@@ -46,6 +52,7 @@ abstract class Scope
 
 	protected function setUp()
 	{
+		IdentityMap::clear();
 		$this->fs = vfsStream::setup('scope', null, $this->scope);
 	}
 

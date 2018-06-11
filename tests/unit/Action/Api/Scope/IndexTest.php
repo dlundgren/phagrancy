@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\IndexTest
+ */
+
 namespace Phagrancy\Action\Api\Scope;
 
 use Phagrancy\Http\Response\Api\BoxList;

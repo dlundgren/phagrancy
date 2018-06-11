@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Model\Input\BoxUpload
+ */
+
 namespace Phagrancy\Model\Input;
 
 use Validator\LIVR;
 
+/**
+ * Input for the BoxUpload
+ *
+ * Validates the scope, name, version, provider
+ *
+ * @package Phagrancy\Model\Input
+ */
 class BoxUpload
 {
 	use IsValidator, ValidatesScope, ValidatesBoxName;

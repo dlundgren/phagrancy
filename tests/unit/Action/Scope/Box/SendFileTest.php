@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\SendFileTest
+ */
+
 namespace Phagrancy\Action\Scope\Box;
 
 use Phagrancy\Http\Response\NotFound;

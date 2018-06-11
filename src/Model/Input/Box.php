@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Model\Input\Box
+ */
+
 namespace Phagrancy\Model\Input;
 
 use Validator\LIVR;
 
+/**
+ * Input class for the box
+ *
+ * This validates the scope & box name for the box
+ *
+ * @package Phagrancy\Model\Input
+ */
 class Box
 {
 	use IsValidator, ValidatesScope, ValidatesBoxName;
