@@ -34,6 +34,8 @@ class FrontendTest
 	public function provideGoodRoutes()
 	{
 		return [
+			['GET', '', Response\Json::class, null],
+			['GET', '/', Response\Json::class, null],
 			['GET', '/test', Response\BoxList::class, ['username' => 'test', 'boxes' => ['test']]],
 			['GET', '/test/nope', Response\BoxDefinition::class, ['name' => 'test/nope', 'versions' => []]],
 			[

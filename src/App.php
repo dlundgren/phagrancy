@@ -7,6 +7,7 @@
 
 namespace Phagrancy;
 
+use Phagrancy\Action\AllClear;
 use Phagrancy\Http\Middleware;
 
 /**
@@ -50,5 +51,7 @@ class App
 				$this->get('/{version}/{provider}', Action\Scope\Box\SendFile::class);
 			});
 		})->add($container[Middleware\ValidatePassword::class]);
+
+		$this->get('/', AllClear::class);
 	}
 }
