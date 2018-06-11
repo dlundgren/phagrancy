@@ -23,4 +23,5 @@ install:
   - travis_retry composer install
 
 script:
-  - composer travis
+  - if [ "$TRAVIS_PHP_VERSION" != "7.2" ]; composer test
+  - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; composer test-coverage
