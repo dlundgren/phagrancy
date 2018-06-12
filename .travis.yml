@@ -22,9 +22,6 @@ matrix:
 install:
   - travis_retry composer install
 
-before_script:
-  - if [ "$TRAVIS_PHP_VERSION" != "7.2" ]; then phpenv config-rm xdebug.ini; fi
-
 script:
   - if [ "$TRAVIS_PHP_VERSION" != "7.2" ]; then composer test; fi
   - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then composer test-coverage; fi

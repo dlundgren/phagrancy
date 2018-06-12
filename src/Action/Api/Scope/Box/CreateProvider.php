@@ -24,7 +24,7 @@ class CreateProvider
 		$uri  = $request->getUri();
 		$data = $request->getParsedBody();
 		if (empty($data)) {
-			return new Response\BadRequest('No provider supplied');
+			return new Response\InvalidRequest(['provider' => 'Provider is required']);
 		}
 
 		$json = $data['provider'];

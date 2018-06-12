@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Phagrancy\Model\Input\BoxUpload
+ * Contains Phagrancy\Model\Input\BoxVersion
  */
 
 namespace Phagrancy\Model\Input;
@@ -10,13 +10,13 @@ namespace Phagrancy\Model\Input;
 use Validator\LIVR;
 
 /**
- * Input for the BoxUpload
+ * Input for the BoxVersion
  *
- * Validates the scope, name, version, provider
+ * Validates the scope, name, version
  *
  * @package Phagrancy\Model\Input
  */
-class BoxUpload
+class BoxVersion
 {
 	use IsValidator, ValidatesScope, ValidatesBoxName, ValidatesVersion;
 
@@ -27,7 +27,6 @@ class BoxUpload
 				'scope'    => [$this, 'validateScope'],
 				'name'     => [$this, 'validateBoxName'],
 				'version'  => [$this, 'validateVersion'],
-				'provider' => [$this, 'validateProvider']
 			]);
 	}
 
@@ -39,7 +38,6 @@ class BoxUpload
 				'scope'    => self::$SCOPE_RULE,
 				'name'     => self::$BOX_NAME_RULE,
 				'version'  => self::$VERSION_RULE,
-				'provider' => ['required', 'trim', 'to_lc']
 			]);
 	}
 }

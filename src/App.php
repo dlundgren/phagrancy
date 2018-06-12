@@ -24,13 +24,15 @@ class App
 	{
 		parent::__construct($container);
 
+		// @formatter:off
+
 		// vagrant-cloud/atlas api for uploading new boxes
 		$this->group('/api/v1/box/{scope}', function () {
 			$this->get('', Action\Api\Scope\Index::class);
 			$this->group('/{name}', function () {
 				$this->get('', Action\Api\Scope\Box\Definition::class);
 				$this->post('/versions', Action\Api\Scope\Box\CreateVersion::class);
-				$this->group('/version/{version:\d+\.\d+(?:\.\d+.*)}', function () {
+				$this->group('/version/{version}', function () {
 					$this->post('/providers', Action\Api\Scope\Box\CreateProvider::class);
 					$this->put('/release', Action\AllClear::class);
 					$this->group('/provider/{provider}', function () {
@@ -53,5 +55,7 @@ class App
 		})->add($container[Middleware\ValidatePassword::class]);
 
 		$this->get('/', AllClear::class);
+
+		// @formatter:on
 	}
 }

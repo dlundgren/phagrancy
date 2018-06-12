@@ -93,6 +93,10 @@ class Pimple
 			return new Action\Api\Scope\Box\Definition($c[Repository\Box::class], new Input\Box());
 		};
 
+		$di[Action\Api\Scope\Box\CreateVersion::class] = function () {
+			return new Action\Api\Scope\Box\CreateVersion(new Input\BoxVersion());
+		};
+
 		$di[Action\Api\Scope\Box\Upload::class] = function ($c) {
 			return new Action\Api\Scope\Box\Upload($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
 		};

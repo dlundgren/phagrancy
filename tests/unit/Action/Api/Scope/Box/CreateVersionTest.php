@@ -7,8 +7,10 @@
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
+use Phagrancy\Http\Response\InvalidRequest;
 use Phagrancy\Http\Response\Json;
 use Phagrancy\Http\Response\NotFound;
+use Phagrancy\Model\Input\BoxVersion;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
 
 class CreateVersionTest
@@ -26,9 +28,16 @@ class CreateVersionTest
 		);
 	}
 
+	public function testReturnsInvalidParameter()
+	{
+		$response = $this->runAction('test', 'test', '2.-1');
+
+		self::assertInstanceOf(InvalidRequest::class, $response);
+	}
+
 	protected function runAction($scope, $name, $version)
 	{
-		$action = new CreateVersion();
+		$action = new CreateVersion(new BoxVersion());
 
 		$request = $this->buildRequest();
 		$request->getAttribute('route')
