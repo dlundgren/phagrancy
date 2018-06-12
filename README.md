@@ -6,7 +6,7 @@ Phagrancy implements a self-hosted subset of Vagrant Cloud. It allows you to bui
 
 ## Documentation
 
-Please see the [wiki](wiki) for documentation.
+Please see the [wiki](https://github.com/dlundgren/phagrancy/wiki) for documentation.
 
 ## Security
 
