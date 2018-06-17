@@ -46,6 +46,7 @@ class App
 		})->add($container[Middleware\ValidateAccessToken::class]);
 
 		// frontend
+		$app->get('/scopes', Action\Scopes::class);
 		$this->group('/{scope}', function () {
 			$this->get('', Action\Scope\Index::class);
 			$this->group('/{name}', function () {

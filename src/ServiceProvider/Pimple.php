@@ -72,6 +72,10 @@ class Pimple
 		};
 
 		// action handlers
+        $di[Action\Scopes::class] = function ($c) {
+			return new Action\Scopes($c[Repository\Scope::class], new Input\Scope());
+        };
+
 		$di[Action\Scope\Index::class] = function ($c) {
 			return new Action\Scope\Index($c[Repository\Scope::class], new Input\Scope());
 		};

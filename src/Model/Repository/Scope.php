@@ -27,6 +27,16 @@ class Scope
 	}
 
 	/**
+	 * @return mixed|null|Entity\Scope[] The scopes
+	 */
+	public function all()
+	{
+		$scopes = array_diff(scandir($this->path), array('.', '..', 'tmp'));
+
+		return $scopes;
+	}
+
+	/**
 	 * @param string $name The name of the scope to find
 	 * @return mixed|null|Entity\Scope The scope
 	 */
