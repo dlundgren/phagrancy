@@ -7,10 +7,12 @@
 
 namespace Phagrancy\Action\Scope\Box;
 
+use Flow\JSONPath\JSONPath;
 use Phagrancy\Http\Response\BoxDefinition;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
 use Phagrancy\Model\Repository\Box as BoxRepository;
 use Phagrancy\Model\Input\Box as BoxInput;
+use PHPUnit\Framework\Constraint\IsIdentical;
 
 class DefinitionTest
 	extends ScopeTestCase
@@ -67,6 +69,9 @@ class DefinitionTest
 				]
 			]
 		);
+
+		// ensure the
+//		self::assertResponseJsonEqualsString($response, "versions.0.version", "1");
 	}
 
 	protected function runAction($scope, $name)

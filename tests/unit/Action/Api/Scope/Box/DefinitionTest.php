@@ -21,6 +21,7 @@ class DefinitionTest
 
 		self::assertInstanceOf(BoxDefinition::class, $response);
 		self::assertResponseHasStatus($response, 200);
+		self::assertResponseJsonEqualsString($response, 'versions.0.version', '1.0');
 	}
 
 	public function testReturnsOkForNonExistentBox()

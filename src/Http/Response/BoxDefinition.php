@@ -21,7 +21,7 @@ class BoxDefinition
 	public function __construct(Entity\Box $box, UriInterface $uri)
 	{
 		$json = [
-			'name'      => $box->path(),
+			'name'      => (string)$box->path(),
 			'versions' => []
 		];
 		foreach ($box->versions() as $version => $providers) {
@@ -31,7 +31,7 @@ class BoxDefinition
 			$vpbs = [];
 			foreach ($providers as $provider) {
 				$vpbs[] = [
-					'name' => $provider,
+					'name' => (string)$provider,
 					'url'  => (string)$uri->withPath("/{$box->path()}/{$version}/{$provider}")
 				];
 			}

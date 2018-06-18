@@ -53,7 +53,7 @@ class App
 				$this->get('', Action\Scope\Box\Definition::class);
 				$this->get('/{version}/{provider}', Action\Scope\Box\SendFile::class);
 			});
-		})->add($container[Middleware\ValidatePassword::class]);
+		})->add($container[Middleware\ValidateTokenOrPassword::class]);
 
 		$this->get('/', AllClear::class);
 

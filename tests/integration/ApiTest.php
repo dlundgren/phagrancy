@@ -43,7 +43,7 @@ class ApiTest
 					'tag'      => 'test/test',
 					'versions' => [
 						[
-							'version'   => 200,
+							'version'   => '200',
 							'providers' => [
 								[
 									'name' => 'test',
@@ -141,6 +141,8 @@ class ApiTest
 
 		self::assertInstanceOf(Response\Json::class, $response);
 		self::assertMessageBodyEqualsJsonArray($response, ['version' => 2, 'description' => 'something']);
+
+//		self::assertResponseJsonEqualsString($response, 'version');
 	}
 
 	// provider create

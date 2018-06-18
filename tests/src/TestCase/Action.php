@@ -42,6 +42,22 @@ abstract class Action
 			->withAttribute('route', new Route('GET', '/', function() {}));
 	}
 
+	public static function assertResponseJsonEqualsString($response, $path, $value)
+	{
+		$b = $response->getBody();
+		$b->rewind();
+		$json = json_decode($b->getContents(), true);
+
+		$keys = explode('.', $path);
+		foreach ($keys as $key) {
+			if (array_key_exists($key, $json)) {
+				$json =& $json[$key];
+			}
+		}
+
+		self::assertSame((string)$value, $json, "JSON at $path does not match string `$value`");
+	}
+
 	public static function assertMessageBodyEqualsJsonArray(ResponseInterface $response, $json)
 	{
 		self::hasHeader('content-type', Assert::matchesRegularExpression(',^application/json(;.+)?$,'));

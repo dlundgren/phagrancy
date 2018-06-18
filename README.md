@@ -10,8 +10,7 @@ Please see the [wiki](https://github.com/dlundgren/phagrancy/wiki) for documenta
 
 ## Security
 
-Phagrancy is intended to be used in a trusted network, and doesn't have any authentication. As can be seen in
-the examples above, reading, writing and modifying boxes is allowed without authentication.
+Phagrancy is intended to be used in a trusted network. There are limited authentication options, that control access to the api and the frontend.
 
 ## Credits
 

@@ -18,10 +18,7 @@ use Slim\Http\Response;
  */
 class ValidateAccessToken
 {
-	/**
-	 * @var string The access_token parameter
-	 */
-	private $token;
+	use ValidatesToken;
 
 	public function __construct($token)
 	{
@@ -30,7 +27,7 @@ class ValidateAccessToken
 
 	public function __invoke(Request $request, Response $response, $next)
 	{
-		return (empty($this->token) || ($request->getQueryParam('access_token') === $this->token))
+		return ($this->validateToken($request))
 			? $next($request, $response)
 			: new NotAuthorized();
 	}

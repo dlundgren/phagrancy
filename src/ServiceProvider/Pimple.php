@@ -56,10 +56,10 @@ class Pimple
 			return new Middleware\ValidateAccessToken(isset($c['env']['api_token']) ? $c['env']['api_token'] : '');
 		};
 
-		$di[Middleware\ValidatePassword::class] = function ($c) {
-			return new Middleware\ValidatePassword(
-				isset($c['env']['access_password']) ? $c['env']['access_password'] : '',
-				isset($c['env']['login_secure_only']));
+		$di[Middleware\ValidateTokenOrPassword::class] = function ($c) {
+			return new Middleware\ValidateTokenOrPassword(
+				isset($c['env']['access_token']) ? $c['env']['access_token'] : '',
+				isset($c['env']['access_password']) ? $c['env']['access_password'] : '');
 		};
 
 		// register repositories
