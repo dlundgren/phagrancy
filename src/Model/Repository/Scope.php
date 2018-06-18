@@ -31,7 +31,7 @@ class Scope
 	 */
 	public function all()
 	{
-		$scopes = array_diff(scandir($this->path), array('.', '..', 'tmp'));
+		$scopes = array_values(array_diff(scandir($this->path), array('.', '..', 'tmp')));
 
 		return $scopes;
 	}

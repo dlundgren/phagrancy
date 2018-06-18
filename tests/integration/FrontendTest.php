@@ -36,6 +36,7 @@ class FrontendTest
 		return [
 			['GET', '', Response\Json::class, null],
 			['GET', '/', Response\Json::class, null],
+			['GET', '/scopes', Response\ScopeList::class, ['alt','test']],
 			['GET', '/test', Response\BoxList::class, ['username' => 'test', 'boxes' => ['test']]],
 			['GET', '/test/nope', Response\BoxDefinition::class, ['name' => 'test/nope', 'versions' => []]],
 			[
