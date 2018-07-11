@@ -28,13 +28,21 @@ class ValidateTokenOrPassword
 
 	public function __invoke(Request $request, Response $response, $next)
 	{
-		$hasAccessToken = $request->getQueryParam('access_token', false);
-		$run            = $hasAccessToken
-			? $this->validateToken($request)
-			: $this->validatePassword($request);
+		$notAuthorized = new NotAuthorized();
+		$allow         = false;
+		if ($request->getQueryParam('access_token', false)) {
+			$allow = $this->validateToken($request);
+		}
+		elseif ($this->validatePassword($request)) {
+			$allow = true;
+		}
+		elseif (isset($this->password)) {
+			// enforce Basic authentication
+			$notAuthorized = $notAuthorized->withHeader('WWW-Authenticate', 'Basic realm="Phagrancy"');
+		}
 
-		return $run
+		return $allow
 			? $next($request, $response)
-			: new NotAuthorized();
+			: $notAuthorized;
 	}
 }
