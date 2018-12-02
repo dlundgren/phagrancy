@@ -36,7 +36,7 @@ class BoxDefinition
 				];
 			}
 			$json['versions'][] = [
-				'version'   => $version,
+				'version'   => strval($version),
 				'providers' => $vpbs
 			];
 		}
