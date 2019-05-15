@@ -32,7 +32,7 @@ abstract class Integration
 			'storage' => [
 				'test' => [
 					'test' => [
-						'200' => [
+						'200'   => [
 							'test.box' => 'test'
 						],
 						'2.0.0' => [
@@ -81,11 +81,12 @@ abstract class Integration
 	 * @param      $path
 	 * @param null $body
 	 * @param bool $bodyIsJson
+	 * @oaram string $token
 	 * @return ResponseInterface
 	 * @throws \Slim\Exception\MethodNotAllowedException
 	 * @throws \Slim\Exception\NotFoundException
 	 */
-	protected function runApp($method, $path, $body = null, $bodyIsJson = false)
+	protected function runApp($method, $path, $body = null, $bodyIsJson = false, $token = null)
 	{
 		$env = [
 			'REQUEST_METHOD' => $method,
@@ -98,10 +99,14 @@ abstract class Integration
 			$env['CONTENT_TYPE'] = 'application/json';
 		}
 
+		if ($token) {
+			$env['HTTP_AUTHORIZATION'] = "Bearer {$token}";
+		}
+
 		$request = Request::createFromEnvironment(Environment::mock($env));
 
 		if (!empty($body)) {
-			$streamFile = $this->fs->url().'/request-body';
+			$streamFile = $this->fs->url() . '/request-body';
 			file_put_contents($streamFile, $body);
 			$request = $request->withBody(new Stream(fopen($streamFile, 'r')));
 		}

@@ -19,27 +19,41 @@ class ValidateAccessTokenTest
 	extends TestCase
 {
 	protected $token = 'test';
-	public function testRunsNext()
+
+	public function testRunsNextWithQueryParam()
 	{
 		$response = $this->runAction('test',function() {return new Json(['hi']);});
 		self::assertInstanceOf(Json::class, $response);
 		self::assertEquals(200, $response->getStatusCode());
 	}
 
-	public function testReturnsNotAuthorized()
+	public function testReturnsNotAuthorizedWithQueryParam()
 	{
 		$response = $this->runAction(null, function() {});
 		self::assertInstanceOf(NotAuthorized::class, $response);
 	}
 
-	public function runAction($token, $next)
+	public function testRunsNextWithHeader()
+	{
+		$response = $this->runAction('test',function() {return new Json(['hi']);}, true);
+		self::assertInstanceOf(Json::class, $response);
+		self::assertEquals(200, $response->getStatusCode());
+	}
+
+	public function runAction($token, $next, $useHeader = null)
 	{
 		$e = [
 			'REQUEST_METHOD' => 'GET',
 			'REQUEST_URI'    => '/'
 		];
+
 		if (isset($token)) {
-			$e['QUERY_STRING'] = 'access_token=' . $token;
+			if ($useHeader) {
+				$e['HTTP_AUTHORIZATION'] = "Bearer {$token}";
+			}
+			else {
+				$e['QUERY_STRING'] = 'access_token=' . $token;
+			}
 		}
 
 		$request = Request::createFromEnvironment(Environment::mock($e));

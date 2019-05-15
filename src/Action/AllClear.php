@@ -7,7 +7,7 @@
 
 namespace Phagrancy\Action;
 
-use Phagrancy\Http\Response\Json;
+use Phagrancy\Http\Response\AllClear as AllClearResponse;
 
 /**
  * Sends a generic 200 Response
@@ -18,6 +18,6 @@ class AllClear
 {
 	public function __invoke()
 	{
-		return new Json();
+		return new AllClearResponse;
 	}
 }

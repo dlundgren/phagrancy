@@ -53,13 +53,14 @@ class Pimple
 
 		// Authorization middleware
 		$di[Middleware\ValidateAccessToken::class] = function ($c) {
-			return new Middleware\ValidateAccessToken(isset($c['env']['api_token']) ? $c['env']['api_token'] : '');
+			return new Middleware\ValidateAccessToken(isset($c['env']['api_token']) ? $c['env']['api_token'] : null);
 		};
 
 		$di[Middleware\ValidateTokenOrPassword::class] = function ($c) {
 			return new Middleware\ValidateTokenOrPassword(
-				isset($c['env']['access_token']) ? $c['env']['access_token'] : '',
-				isset($c['env']['access_password']) ? $c['env']['access_password'] : '');
+				isset($c['env']['access_token']) ? $c['env']['access_token'] : null,
+				isset($c['env']['access_password']) ? $c['env']['access_password'] : null
+			);
 		};
 
 		// register repositories
