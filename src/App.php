@@ -26,6 +26,10 @@ class App
 
 		// @formatter:off
 
+		// packer uses /authenticate to test that the token is valid (must return a 200 when valid)
+		$this->get('/api/v1/authenticate', Action\AllClear::class)
+			 ->add($container[Middleware\ValidateAccessToken::class]);
+
 		// vagrant-cloud/atlas api for uploading new boxes
 		$this->group('/api/v1/box/{scope}', function () {
 			$this->get('', Action\Api\Scope\Index::class);

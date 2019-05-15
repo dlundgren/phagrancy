@@ -226,4 +226,36 @@ class ApiTest
 		file_put_contents($env, $old);
 		unset($this->app);
 	}
+
+	public function testAccessTokenAsHeaderValidates()
+	{
+		$env = $this->fs->url() . '/.env';
+		$old = file_get_contents($env);
+		file_put_contents($env, "{$old}\napi_token=testing");
+
+		unset($this->app);
+
+		$response = $this->runApp('GET', '/api/v1/authenticate', null, null, 'testing');
+
+		self::assertInstanceOf(Response\AllClear::class, $response);
+
+		file_put_contents($env, $old);
+		unset($this->app);
+	}
+
+	public function testAccessTokenAsHeaderIsInvalid()
+	{
+		$env = $this->fs->url() . '/.env';
+		$old = file_get_contents($env);
+		file_put_contents($env, "{$old}\napi_token=testing");
+
+		unset($this->app);
+
+		$response = $this->runApp('GET', '/api/v1/authenticate', null, null, 'nope');
+
+		self::assertInstanceOf(Response\NotAuthorized::class, $response);
+
+		file_put_contents($env, $old);
+		unset($this->app);
+	}
 }
