@@ -27,7 +27,7 @@ class ValidateAccessToken
 
 	public function __invoke(Request $request, Response $response, $next)
 	{
-		return ($this->validateToken($request))
+		return $this->validateToken($request)
 			? $next($request, $response)
 			: new NotAuthorized();
 	}

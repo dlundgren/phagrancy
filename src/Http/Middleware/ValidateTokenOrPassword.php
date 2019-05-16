@@ -29,9 +29,9 @@ class ValidateTokenOrPassword
 	public function __invoke(Request $request, Response $response, $next)
 	{
 		$notAuthorized = new NotAuthorized();
-		$allow         = false;
-		if ($request->getQueryParam('access_token', false)) {
-			$allow = $this->validateToken($request);
+		$allow = false;
+		if ($this->token && !empty($token = $this->getTokenFromRequest($request))) {
+			$allow = ($token === $this->token);
 		}
 		elseif ($this->validatePassword($request)) {
 			$allow = true;

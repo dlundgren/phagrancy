@@ -31,7 +31,7 @@ trait ValidatesPassword
 	 */
 	private function validatePassword(Request $request)
 	{
-		if (empty($this->password)) {
+		if ($this->password === null) {
 			return true;
 		}
 

@@ -25,10 +25,29 @@ trait ValidatesToken
 
 	/**
 	 * @param Request $request
+	 * @return string The token if it exists
+	 */
+	private function getTokenFromRequest(Request $request)
+	{
+		$token = $request->getQueryParam('access_token', '');
+		if (empty($token) && !empty($token = $request->getHeaderLine('Authorization'))) {
+			$tmp   = explode(' ', $token, 2);
+			$token = $tmp[1];
+		}
+
+		return $token;
+	}
+
+	/**
+	 * @param Request $request
 	 * @return bool True if the token is not set or the access_token query param matches
 	 */
 	private function validateToken(Request $request)
 	{
-		return (empty($this->token) || ($request->getQueryParam('access_token') === $this->token));
+		if ($this->token === null) {
+			return true;
+		}
+
+		return $this->getTokenFromRequest($request) === $this->token;
 	}
 }

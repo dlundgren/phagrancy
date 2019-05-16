@@ -19,7 +19,7 @@ class ValidateTokenOrPasswordTest
 	extends TestCase
 {
 	protected $password = 'test';
-	protected $token = 'coffee';
+	protected $token    = 'coffee';
 
 	public function provideClassSetup()
 	{
@@ -56,92 +56,28 @@ class ValidateTokenOrPasswordTest
 			$useToken ? 'nope' : null,
 			$usePassword ? 'nope' : null,
 			function () {
+				throw new \RuntimeException("shouldn't reach this");
 			});
 
 		self::assertInstanceOf(NotAuthorized::class, $response);
 	}
 
-	public function xtestRunsNextWithPassword()
+	public function testReturnsNextWithAuthorizationHeader()
 	{
 		$response = $this->runAction(
+			$this->token,
 			null,
-			'test',
 			function () {
 				return new Json(['hi']);
-			});
+			},
+			true);
 		self::assertInstanceOf(Json::class, $response);
 		self::assertEquals(200, $response->getStatusCode());
 
 		Action::assertMessageBodyEqualsJsonArray($response, ["hi"]);
 	}
 
-	public function xtestRunsNextWithTokenAndPassword()
-	{
-		$response = $this->runAction(
-			'coffee',
-			'test',
-			function () {
-				return new Json(['hi']);
-			});
-		self::assertInstanceOf(Json::class, $response);
-		self::assertEquals(200, $response->getStatusCode());
-
-		Action::assertMessageBodyEqualsJsonArray($response, ["hi"]);
-	}
-
-	public function xtestReturnsNotAuthorized()
-	{
-		$response = $this->runAction(
-			null, 'nope', function () {
-		});
-		self::assertInstanceOf(NotAuthorized::class, $response);
-	}
-
-	public function xtestReturnsNextWithoutPassword()
-	{
-		$e = [
-			'REQUEST_METHOD' => 'GET',
-			'REQUEST_URI'    => '/',
-			'PHP_AUTH_USER'  => 'someone',
-			'PHP_AUTH_PW'    => 'test'
-		];
-
-		$request = Request::createFromEnvironment(Environment::mock($e));
-		$vat     = new ValidateTokenOrPassword(null, null);
-
-		$response = $vat(
-			$request, new Response(), function () {
-			return new Json('skip');
-		});
-
-		self::assertInstanceOf(Json::class, $response);
-		self::assertEquals(200, $response->getStatusCode());
-		Action::assertMessageBodyEqualsJsonArray($response, 'skip');
-	}
-
-	public function xtestReturnsNextWithTokenAndWithoutPassword()
-	{
-		$e = [
-			'REQUEST_METHOD' => 'GET',
-			'REQUEST_URI'    => '/',
-			'PHP_AUTH_USER'  => 'someone',
-			'PHP_AUTH_PW'    => 'test'
-		];
-
-		$request = Request::createFromEnvironment(Environment::mock($e));
-		$vat     = new ValidateTokenOrPassword(null, null);
-
-		$response = $vat(
-			$request, new Response(), function () {
-			return new Json('skip');
-		});
-
-		self::assertInstanceOf(Json::class, $response);
-		self::assertEquals(200, $response->getStatusCode());
-		Action::assertMessageBodyEqualsJsonArray($response, 'skip');
-	}
-
-	public function runAction($token, $password, $next)
+	public function runAction($token, $password, $next, $useHeader = false)
 	{
 		$e = [
 			'REQUEST_METHOD' => 'GET',
@@ -151,7 +87,12 @@ class ValidateTokenOrPasswordTest
 		];
 
 		if ($token !== null) {
-			$e['REQUEST_URI'] = "/?access_token={$token}";
+			if ($useHeader) {
+				$e['HTTP_AUTHORIZATION'] = "Bearer {$token}";
+			}
+			else {
+				$e['REQUEST_URI'] = "/?access_token={$token}";
+			}
 			unset($e['PHP_AUTH_PW']);
 			unset($e['PHP_AUTH_USER']);
 		}
