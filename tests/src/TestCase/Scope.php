@@ -50,7 +50,7 @@ abstract class Scope
 
 	protected $fs;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		IdentityMap::clear();
 		$this->fs = vfsStream::setup('scope', null, $this->scope);

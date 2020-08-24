@@ -64,7 +64,7 @@ abstract class Integration
 	 */
 	protected $app;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$this->fs = vfsStream::setup('integration', null, $this->spec);
 	}
