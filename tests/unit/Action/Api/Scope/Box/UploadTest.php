@@ -15,10 +15,10 @@ use Phagrancy\TestCase\Scope as ScopeTestCase;
 class UploadTest
 	extends ScopeTestCase
 {
-	public function testReturnsOkForExistingBox()
+	private function uploadBox(string $content)
 	{
 		\MockPhpStream::register();
-		file_put_contents('php://input', 'uploading');
+		file_put_contents('php://input', $content);
 
 		$request = $this->buildRequest();
 		$request->getAttribute('route')
@@ -40,9 +40,29 @@ class UploadTest
 
 		\MockPhpStream::restore();
 
+		return $response;
+	}
+
+	public function testReturnsOkForExistingBox()
+	{
+		$response = $this->uploadBox('uploading');
+
 		self::assertEquals('uploading', file_get_contents($this->fs->url() . '/test/upload/1.0/test.box'));
 		self::assertInstanceOf(Json::class, $response);
 		self::assertResponseHasStatus($response, 200);
+
+		$response->getBody()->close();
+	}
+
+	public function testReturnsNotFoundForAlreadyUploadedBox()
+	{
+		$this->testReturnsOkForExistingBox();
+
+		$response = $this->uploadBox('override box');
+
+		self::assertNotEquals('override box', file_get_contents($this->fs->url() . '/test/upload/1.0/test.box'));
+		self::assertInstanceOf(Json::class, $response);
+		self::assertResponseHasStatus($response, 404);
 
 		$response->getBody()->close();
 	}

@@ -58,6 +58,13 @@ class Upload
 
 		extract($params);
 		$box = $this->boxes->ofNameInScope($name, $scope);
+		$path = "{$this->uploadPath}/{$box->path()}/{$version}/";
+
+		// If box with same version and provider already exists prevent overwriting
+		if (file_exists("$path/{$provider}.box")) {
+			return new Response\NotFound();
+		}
+
 		if ($box) {
 			if (!file_exists("{$this->uploadPath}/tmp")) {
 				mkdir("{$this->uploadPath}/tmp", 0755, true);
@@ -73,7 +80,6 @@ class Upload
 			fclose($to);
 
 			// make sure it exists
-			$path = "{$this->uploadPath}/{$box->path()}/{$version}/";
 			if (!file_exists($path)) {
 				mkdir($path, 0755, true);
 			}
