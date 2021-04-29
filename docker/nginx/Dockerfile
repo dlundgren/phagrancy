@@ -5,7 +5,7 @@ RUN git clone https://github.com/dlundgren/phagrancy.git \
   && composer install \
   && rm -rvf .git .gitignore .travis.yml
 
-FROM nginx:1.16.1
+FROM nginx:1.20.0
 
 COPY --from=composer /app/phagrancy /srv/phagrancy
 COPY nginx.conf /etc/nginx/nginx-phagrancy.conf
