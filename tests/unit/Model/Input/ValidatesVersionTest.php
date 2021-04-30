@@ -19,14 +19,8 @@ class ValidatesVersionTest
 	public function provideGoodVersions()
 	{
 		return [
-			['1'],
-			['20180609'],
-			['20180609.13425'],
 			['1.2.3'],
-			['1.alpha_a'],
-			['1.2.3.alpha'],
-			['1.2.3.0+b'],
-			['1.2.3-alpha.10.beta.0+build.unicorn.rainbow'],
+			['v2018.06.09'],
 		];
 	}
 
@@ -34,6 +28,13 @@ class ValidatesVersionTest
 	{
 		return [
 			['1.-1'],
+			['1.alpha_a'],
+			['1.2.3.alpha'],
+			['1.2.3.0+b'],
+			['1.2.3-alpha.10.beta.0+build.unicorn.rainbow'],
+			['1'],
+			['20180609'],
+			['20180609.13425'],
 		];
 	}
 
