@@ -9,12 +9,6 @@
             "email": "dlundgren@syberisle.net"
         }
     ],
-    "require": {
-        "php": ">=7.2",
-        "josegonzalez/dotenv": "^3.2",
-        "slim/slim": "^3.0",
-        "validator/livr": "dev-master"
-    },
     "autoload": {
         "psr-4" :{
             "Phagrancy\\":"src"
@@ -28,12 +22,17 @@
             "tests/src/upload-tempnam.php"
         ]
     },
+    "require": {
+        "php": ">=7.2",
+        "josegonzalez/dotenv": "^3.2",
+        "slim/slim": "^3.0",
+        "validator/livr": "dev-master"
+    },
     "require-dev": {
         "phpunit/phpunit": "^8.5",
         "mikey179/vfsstream": "^1.6",
         "helmich/phpunit-psr7-assert": "^4.1",
-        "syberisle/mock-php-stream": "^1.1",
-        "codeclimate/php-test-reporter": "^0.4.4"
+        "syberisle/mock-php-stream": "^1.1"
     },
     "scripts" : {
         "test": "vendor/bin/phpunit",
