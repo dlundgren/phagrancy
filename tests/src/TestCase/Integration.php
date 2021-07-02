@@ -37,7 +37,7 @@ abstract class Integration
 						],
 						'2.0.0' => [
 							'test.box' => 'test'
-						]
+						],
 					]
 				],
 				"alt"  => [
@@ -49,7 +49,14 @@ abstract class Integration
 							'vmware.box' => 'vmware'
 						]
 					]
-				]
+				],
+                'delete' => [
+                    'test' => [
+                        '1.0.0' => [
+                            'test.box' => 'testcontent'
+                        ]
+                    ]
+                ]
 			]
 		]
 	];

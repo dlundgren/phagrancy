@@ -41,7 +41,7 @@ class App
 					$this->put('/release', Action\AllClear::class);
 					$this->group('/provider/{provider}', function () {
 						$this->get('', Action\Api\Scope\Box\SendFile::class);
-						$this->delete('', Action\AllClear::class);
+						$this->delete('', Action\Api\Scope\Box\Delete::class);
 						$this->get('/upload', Action\Api\Scope\Box\UploadPreFlight::class);
 						$this->put('/upload', Action\Api\Scope\Box\Upload::class);
 					});

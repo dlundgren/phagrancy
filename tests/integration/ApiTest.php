@@ -67,9 +67,9 @@ class ApiTest
 			// provider delete
 			[
 				'DELETE',
-				'test/something/version/2.0.0/provider/test',
+				'delete/test/version/1.0.0/provider/test',
 				Response\Json::class,
-				null
+				[]
 			],
 			// version release
 			[
@@ -194,6 +194,16 @@ class ApiTest
 
 		self::assertInstanceOf(Response\NotFound::class, $response);
 	}
+
+	public function testDeleteReturnsNotFoundOnNotExistingBox()
+    {
+        $response = $this->runApp(
+            'DELETE',
+            '/api/v1/box/test/something/version/1.0.0/provider/virtualtest'
+        );
+
+        self::assertInstanceOf(Response\NotFound::class, $response);
+    }
 
 	public function testAccessTokenIsRequired()
 	{
