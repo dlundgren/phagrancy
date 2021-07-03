@@ -106,6 +106,10 @@ class Pimple
 			return new Action\Api\Scope\Box\Upload($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
 		};
 
+        $di[Action\Api\Scope\Box\Delete::class] = function ($c) {
+            return new Action\Api\Scope\Box\Delete($c[Repository\Box::class], new Input\BoxDelete(), $c['path.storage']);
+        };
+
 		$di[Action\Api\Scope\Box\SendFile::class] = function ($c) {
 			return new Action\Api\Scope\Box\SendFile($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
 		};

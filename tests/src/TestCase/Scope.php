@@ -44,7 +44,12 @@ abstract class Scope
 				'1.1' => [
 					'test.box' => 'test'
 				]
-			]
+			],
+            'delete' => [
+                '1.0.0' => [
+                    'test.box' => 'testcontent'
+                ]
+            ]
 		]
 	];
 
