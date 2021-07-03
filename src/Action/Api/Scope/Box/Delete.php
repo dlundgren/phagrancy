@@ -13,7 +13,7 @@ use Phagrancy\Model\Repository;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Action for deleeting a box from the server
+ * Action for deleting a box from the server
  *
  * @package Phagrancy\Action\Api\Scope\Box
  */
@@ -36,8 +36,8 @@ class Delete
 
     public function __construct(Repository\Box $boxes, Input\BoxDelete $input, $storagePath)
     {
-        $this->boxes      = $boxes;
-        $this->input      = $input;
+        $this->boxes       = $boxes;
+        $this->input       = $input;
         $this->storagePath = $storagePath;
     }
 
