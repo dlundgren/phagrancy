@@ -28,7 +28,7 @@ trait ValidatesVersion
 	{
 		$error = "Version must be of the format x.y.z where x, y, and z are all integers, or follow SemVer 2.0.0";;
 		return function ($value) use ($error) {
-			if (!preg_match('/^v?(0|[1-9]\d*)(?:\.(0|[1-9]\d*)){0,2}(?:(\.|-)[\da-z+_-]+)*$/i', $value)) {
+			if (!preg_match('/^v?(\d+\.\d+\.\d+)$/i', $value)) {
 				return $error;
 			}
 

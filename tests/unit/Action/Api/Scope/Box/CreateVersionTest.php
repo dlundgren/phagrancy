@@ -18,13 +18,13 @@ class CreateVersionTest
 {
 	public function testReturnsOkForExistingBox()
 	{
-		$response = $this->runAction('test', 'test', '2.0');
+		$response = $this->runAction('test', 'test', '2.0.0');
 
 		self::assertInstanceOf(Json::class, $response);
 		self::assertResponseHasStatus($response, 200);
 		self::assertMessageBodyMatchesJson(
 			$response,
-			['version' => "2.0", 'description' => 'description']
+			['version' => "2.0.0", 'description' => 'description']
 		);
 	}
 
