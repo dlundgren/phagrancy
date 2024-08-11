@@ -23,10 +23,11 @@ class ValidatesVersionTest
 			['20180609'],
 			['20180609.13425'],
 			['1.2.3'],
-			['1.alpha_a'],
-			['1.2.3.alpha'],
-			['1.2.3.0+b'],
-			['1.2.3-alpha.10.beta.0+build.unicorn.rainbow'],
+			['1.2.3-alpha'],
+			['1.2.3-alpha-build'],
+			['1-beta'],
+			['1.2-charlie'],
+			['0.1']
 		];
 	}
 
@@ -34,6 +35,12 @@ class ValidatesVersionTest
 	{
 		return [
 			['1.-1'],
+			['v5'],
+			['1.alpha_a'],
+			['1.2.3.alpha'],
+			['1.2.3.0+b'],
+			['1.2.3-alpha build'],
+			['1.2.3-alpha.10.beta.0+build.unicorn.rainbow'],
 		];
 	}
 

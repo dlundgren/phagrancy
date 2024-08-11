@@ -7,9 +7,9 @@
 
 namespace Phagrancy\Http\Response\Api;
 
+use Phagrancy\Concern\GeneratesDefinition;
 use Phagrancy\Http\Response\Json;
 use Phagrancy\Model\Entity;
-use Psr\Http\Message\UriInterface;
 
 /**
  * Box JSON definition response
@@ -19,28 +19,15 @@ use Psr\Http\Message\UriInterface;
 class BoxDefinition
 	extends Json
 {
-	public function __construct(Entity\Box $box, UriInterface $uri)
+	use GeneratesDefinition;
+
+	/**
+	 * @var string The key name for the definition. API uses tag, non-API uses name
+	 */
+	protected $nameKey = 'tag';
+
+	protected function resolveUriPath(Entity\Box $box, $version, $provider)
 	{
-		$json = [
-			'tag'      => $box->path(),
-			'versions' => []
-		];
-		foreach ($box->versions() as $version => $providers) {
-			if (empty($providers)) {
-				continue;
-			}
-			$vpbs = [];
-			foreach ($providers as $provider) {
-				$vpbs[] = [
-					'name' => $provider,
-					'url'  => (string)$uri->withPath("/api/v1/box/{$box->path()}/version/{$version}/provider/{$provider}")
-				];
-			}
-			$json['versions'][] = [
-				'version'   => $version,
-				'providers' => $vpbs
-			];
-		}
-		parent::__construct($json);
+		return "/api/v1/box/{$box->path()}/version/{$version}/provider/{$provider}";
 	}
 }
