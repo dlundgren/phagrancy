@@ -18,7 +18,9 @@ use Slim\Http\Response;
  */
 class ValidateAccessToken
 {
-	use ValidatesToken;
+	use ValidatesToken {
+		ValidatesToken::validateToken as private _validateToken;
+	}
 
 	public function __construct($token)
 	{
@@ -30,5 +32,19 @@ class ValidateAccessToken
 		return $this->validateToken($request)
 			? $next($request, $response)
 			: new NotAuthorized();
+	}
+
+	protected function validateToken(Request $request)
+	{
+		if (preg_match('#/upload$#', $path = $request->getUri()->getPath())) {
+			if (
+				$this->token &&
+				$request->getQueryParam('X-Phagrancy-Signature') === hash_hmac('sha256', "PUT\n$path", $this->token)
+			) {
+				return true;
+			}
+		}
+
+		return $this->_validateToken($request);
 	}
 }

@@ -36,8 +36,8 @@ trait GeneratesDefinition
 			$versionedProviders = [];
 			foreach ($providers as $provider) {
 				$versionedProviders[] = [
-					'name' => (string)$provider,
-					'url'  => (string)$uri->withPath($this->resolveUriPath($box, $version, $provider))
+					'name' => (string)$provider[0],
+					'url'  => (string)$uri->withPath($this->resolveUriPath($box, $version, join('-', $provider)))
 				];
 			}
 			$json['versions'][] = [

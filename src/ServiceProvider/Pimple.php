@@ -8,10 +8,10 @@
 namespace Phagrancy\ServiceProvider;
 
 use josegonzalez\Dotenv\Loader;
+use Phagrancy\Action;
 use Phagrancy\Http\Middleware;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
-use Phagrancy\Action;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -103,15 +103,52 @@ class Pimple
 		};
 
 		$di[Action\Api\Scope\Box\Upload::class] = function ($c) {
-			return new Action\Api\Scope\Box\Upload($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
+			return new Action\Api\Scope\Box\Upload(
+				$c[Repository\Box::class],
+				new Input\BoxUpload(),
+				$c['path.storage']
+			);
 		};
 
-        $di[Action\Api\Scope\Box\Delete::class] = function ($c) {
-            return new Action\Api\Scope\Box\Delete($c[Repository\Box::class], new Input\BoxDelete(), $c['path.storage']);
-        };
+		$di[Action\Api\Scope\Box\UploadConfirm::class] = function ($c) {
+			return new Action\Api\Scope\Box\UploadConfirm(
+				$c[Repository\Box::class],
+				new Input\BoxUpload(),
+				$c['path.storage']
+			);
+		};
+
+		$di[Action\Api\Scope\Box\UploadDirect::class] = function ($c) {
+			return new Action\Api\Scope\Box\UploadDirect(
+				$c[Repository\Box::class],
+				new Input\BoxUpload(),
+				$c['path.storage'],
+				$c['env']['api_token'] ?? null
+			);
+		};
+
+		$di[Action\Api\Scope\Box\UploadPreFlight::class] = function ($c) {
+			return new Action\Api\Scope\Box\UploadPreFlight(
+				$c[Repository\Box::class],
+				new Input\BoxUpload(),
+				$c['path.storage']
+			);
+		};
+
+		$di[Action\Api\Scope\Box\Delete::class] = function ($c) {
+			return new Action\Api\Scope\Box\Delete(
+				$c[Repository\Box::class],
+				new Input\BoxDelete(),
+				$c['path.storage']
+			);
+		};
 
 		$di[Action\Api\Scope\Box\SendFile::class] = function ($c) {
-			return new Action\Api\Scope\Box\SendFile($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
+			return new Action\Api\Scope\Box\SendFile(
+				$c[Repository\Box::class],
+				new Input\BoxUpload(),
+				$c['path.storage']
+			);
 		};
 	}
 

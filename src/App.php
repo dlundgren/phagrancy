@@ -26,24 +26,32 @@ class App
 
 		// @formatter:off
 
-		// packer uses /authenticate to test that the token is valid (must return a 200 when valid)
-		$this->get('/api/v1/authenticate', Action\AllClear::class)
-			 ->add($container[Middleware\ValidateAccessToken::class]);
-
 		// vagrant-cloud/atlas api for uploading new boxes
-		$this->group('/api/v1/box/{scope}', function () {
-			$this->get('', Action\Api\Scope\Index::class);
-			$this->group('/{name}', function () {
-				$this->get('', Action\Api\Scope\Box\Definition::class);
-				$this->post('/versions', Action\Api\Scope\Box\CreateVersion::class);
-				$this->group('/version/{version}', function () {
-					$this->post('/providers', Action\Api\Scope\Box\CreateProvider::class);
-					$this->put('/release', Action\AllClear::class);
-					$this->group('/provider/{provider}', function () {
-						$this->get('', Action\Api\Scope\Box\SendFile::class);
-						$this->delete('', Action\Api\Scope\Box\Delete::class);
-						$this->get('/upload', Action\Api\Scope\Box\UploadPreFlight::class);
-						$this->put('/upload', Action\Api\Scope\Box\Upload::class);
+		$this->group('/api/{api_version}', function () {
+			$this->get('/authenticate', Action\AllClear::class);
+			$this->group('/box/{scope}', function () {
+				$this->get('', Action\Api\Scope\Index::class);
+				$this->group('/{name}', function () {
+					$this->get('', Action\Api\Scope\Box\Definition::class);
+					$this->post('/versions', Action\Api\Scope\Box\CreateVersion::class);
+					$this->group('/version/{version}', function () {
+						$this->post('/providers', Action\Api\Scope\Box\CreateProvider::class);
+						$this->put('/release', Action\AllClear::class);
+						$this->group('/provider/{provider}', function () {
+							// legacy packer (should this still be supported?)
+							$this->get('', Action\Api\Scope\Box\SendFile::class);
+							$this->delete('', Action\Api\Scope\Box\Delete::class);
+							$this->get('/upload', Action\Api\Scope\Box\UploadPreFlight::class);
+							$this->put('/upload', Action\Api\Scope\Box\Upload::class);
+							// modern packer
+							$this->group('/{architecture}', function() {
+								$this->delete('', Action\Api\Scope\Box\Delete::class);
+								$this->put('/upload/confirm', Action\Api\Scope\Box\UploadConfirm::class);
+								$this->get('/upload/direct', Action\Api\Scope\Box\UploadDirect::class);
+								$this->get('/upload', Action\Api\Scope\Box\UploadPreFlight::class);
+								$this->put('/upload', Action\Api\Scope\Box\Upload::class);
+							});
+						});
 					});
 				});
 			});

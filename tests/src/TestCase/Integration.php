@@ -30,6 +30,13 @@ abstract class Integration
 		'.env' => 'storage_path=data/storage',
 		'data' => [
 			'storage' => [
+				'arch' => [
+					'test' => [
+						'2.0.0' => [
+							'test-amd64.box' => 'test',
+						]
+					],
+				],
 				'test' => [
 					'test' => [
 						'200'   => [
@@ -50,13 +57,18 @@ abstract class Integration
 						]
 					]
 				],
-                'delete' => [
-                    'test' => [
-                        '1.0.0' => [
-                            'test.box' => 'testcontent'
-                        ]
-                    ]
-                ]
+				'delete' => [
+					'test' => [
+						'1.0.0' => [
+							'test.box' => 'testcontent'
+						]
+					],
+					'arch' => [
+						'1.0.0' => [
+							'test-arm64.box' => 'testcontent'
+						]
+					]
+				]
 			]
 		]
 	];

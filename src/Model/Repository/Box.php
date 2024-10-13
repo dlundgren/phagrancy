@@ -76,7 +76,7 @@ class Box
 		foreach (new \FilesystemIterator($dir) as $path => $file) {
 			/** @var $file \SplFileInfo */
 			if ($file->getExtension() === 'box') {
-				$providers[] = $file->getBasename('.box');
+				$providers[] = explode('-', $file->getBasename('.box'));
 			}
 		}
 

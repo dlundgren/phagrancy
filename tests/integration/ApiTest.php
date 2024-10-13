@@ -68,8 +68,14 @@ class ApiTest
 			[
 				'DELETE',
 				'delete/test/version/1.0.0/provider/test',
-				Response\Json::class,
-				[]
+				Response\AllClear::class,
+				null
+			],
+			[
+				'DELETE',
+				'delete/arch/version/1.0.0/provider/test/arm64',
+				Response\AllClear::class,
+				null
 			],
 			// version release
 			[
@@ -179,8 +185,8 @@ class ApiTest
 		\MockPhpStream::restore();
 
 		self::assertInstanceOf(Response\Json::class, $response);
-		self::assertMessageBodyEqualsJsonArray($response, []);
-		self::assertEquals('upload-data', file_get_contents($this->fs->url() . '/data/storage/test/something/1.0.0/virtualtest.box'));
+		self::assertMessageBodyEqualsJsonArray($response, null);
+		self::assertEquals('upload-data', file_get_contents($this->fs->url() . '/data/storage/test/something/1.0.0/virtualtest-unknown.box'));
 
 		$response->getBody()->close();
 	}
@@ -196,14 +202,14 @@ class ApiTest
 	}
 
 	public function testDeleteReturnsNotFoundOnNotExistingBox()
-    {
-        $response = $this->runApp(
-            'DELETE',
-            '/api/v1/box/test/something/version/1.0.0/provider/virtualtest'
-        );
+	{
+		$response = $this->runApp(
+			'DELETE',
+			'/api/v1/box/test/something/version/1.0.0/provider/virtualtest'
+		);
 
-        self::assertInstanceOf(Response\NotFound::class, $response);
-    }
+		self::assertInstanceOf(Response\NotFound::class, $response);
+	}
 
 	public function testAccessTokenIsRequired()
 	{
@@ -267,5 +273,100 @@ class ApiTest
 
 		file_put_contents($env, $old);
 		unset($this->app);
+	}
+
+	public function testArchitectureUpload()
+	{
+		\MockPhpStream::register();
+
+		file_put_contents('php://input', 'arch-data');
+		$response = $this->runApp(
+			'PUT',
+			'/api/v1/box/test/something/version/1.0.0/provider/virtualtest/amd64/upload'
+		);
+
+		\MockPhpStream::restore();
+
+		self::assertInstanceOf(Response\Json::class, $response);
+		self::assertMessageBodyEqualsJsonArray($response, null);
+		self::assertEquals('arch-data', file_get_contents($this->fs->url() . '/data/storage/test/something/1.0.0/virtualtest-amd64.box'));
+
+		$response->getBody()->close();
+	}
+
+	public function testUploadDirectReturnsPathAndCallback()
+	{
+		\MockPhpStream::register();
+
+		file_put_contents('php://input', 'arch-data');
+		$response = $this->runApp(
+			'GET',
+			'/api/v1/box/test/something/version/1.0.0/provider/virtualtest/amd64/upload/direct'
+		);
+
+		\MockPhpStream::restore();
+
+		$path = "/api/v1/box/test/something/version/1.0.0/provider/virtualtest/amd64/upload";
+		$signature = hash_hmac('sha256', "PUT\n{$path}", null);
+		self::assertInstanceOf(Response\Json::class, $response);
+		self::assertMessageBodyEqualsJsonArray($response, [
+			'upload_path' => "http://localhost{$path}?X-Phagrancy-Signature=" . $signature,
+			'callback'    => "http://localhost{$path}/confirm",
+		]);
+
+		$response->getBody()->close();
+	}
+
+	public function testDirectUpload()
+	{
+		$env = $this->fs->url() . '/.env';
+		$old = file_get_contents($env);
+		file_put_contents($env, "{$old}\napi_token=testing");
+
+		unset($this->app);
+
+		\MockPhpStream::register();
+
+		$path = "/api/v1/box/test/direct/version/1.0.0/provider/virtualtest/amd64/upload";
+
+		file_put_contents('php://input', 'arch-data');
+		$response = $this->runApp(
+			'PUT',
+			"{$path}?X-Phagrancy-Signature=" . hash_hmac('sha256', "PUT\n{$path}", 'testing')
+		);
+
+		\MockPhpStream::restore();
+
+		self::assertInstanceOf(Response\Json::class, $response);
+		self::assertMessageBodyEqualsJsonArray($response, null);
+		self::assertEquals('arch-data', file_get_contents($this->fs->url() . '/data/storage/test/direct/1.0.0/virtualtest-amd64.box'));
+
+		$response->getBody()->close();
+	}
+
+	public function testUploadConfirmReturnsSuccess()
+	{
+		$response = $this->runApp(
+			'PUT',
+			'/api/v1/box/arch/test/version/2.0.0/provider/test/amd64/upload/confirm'
+		);
+
+		self::assertInstanceOf(Response\Json::class, $response);
+		self::assertMessageBodyEqualsJsonArray($response, null);
+
+		$response->getBody()->close();
+	}
+
+	public function testUploadConfirmReturnsNotUploaded()
+	{
+		$response = $this->runApp(
+			'PUT',
+			'/api/v1/box/arch/test/version/3.0.0/provider/test/amd64/upload/confirm'
+		);
+
+		self::assertInstanceOf(Response\Json::class, $response);
+		self::assertMessageBodyEqualsJsonArray($response, ['errors' => ['not uploaded']]);
+
+		$response->getBody()->close();
 	}
 }
