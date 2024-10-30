@@ -67,6 +67,15 @@ abstract class UploadAction
 	 */
 	protected function validate(ServerRequestInterface $request)
 	{
+		if (!is_writable($this->uploadPath)) {
+			if (!is_writable(dirname($this->uploadPath))) {
+				return new Response\InternalServerError("Unable to write to disk: {$this->uploadPath}");
+			}
+			else {
+				mkdir($this->uploadPath);
+			}
+		}
+
 		/**
 		 * The route controls these params, and they are validated so safe
 		 *
