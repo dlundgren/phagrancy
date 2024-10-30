@@ -7,22 +7,14 @@
     {
       "type": "file",
       "content": "kakaw",
-      "target": "dummy.box"
+      "target": "/dev/null"
     }
   ],
   "post-processors": [
     [
       {
         "type": "artifice",
-        "files": [
-          "test/box.ovf",
-          "test/metadata.json"
-        ]
-      },
-      {
-        "type": "vagrant",
-        "keep_input_artifact": true,
-        "provider_override": "virtualbox"
+        "files": ["test.box"]
       },
       {
         "type": "vagrant-cloud",

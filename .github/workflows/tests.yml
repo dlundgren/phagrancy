@@ -56,7 +56,9 @@ jobs:
         uses: ramsey/composer-install@v1
 
       - name: Tests
-        run: composer ci-test
+        run: |
+          packer plugins install github.com/hashicorp/vagrant
+          composer ci-test
 
       - name: Code Climate Coverage Action Test
         uses: MartinNuc/codeclimate-action@1
