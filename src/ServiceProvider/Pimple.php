@@ -38,36 +38,8 @@ class Pimple
 		$this->rootPath = $rootPath;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	private function loadEnv()
-	{
-		$envFile = "{$this->rootPath}/.env";
-		if (file_exists($envFile)) {
-			$envLoader = new Loader("{$this->rootPath}/.env");
-			$envLoader->parse();
-
-			$this->env = $envLoader->toArray();
-		}
-		foreach (['api_token','storage_path','access_token','access_password'] as $var) {
-			$value = getenv("PHAGRANCY_" . strtoupper($var));
-			$this->env[$var] = empty($value) ? ($this->env[$var] ?? null) : $value;
-		}
-
-		return $this->env;
-	}
-
 	public function register(Container $di): void
 	{
-		$envFile = "{$this->rootPath}/.env";
-		if (file_exists($envFile)) {
-			$envLoader = new Loader("{$this->rootPath}/.env");
-			$envLoader->parse();
-
-			$this->env = $envLoader->toArray();
-		}
-
 		$di['env']          = $this->env = $this->loadEnv();
 		$di['path.storage'] = $this->resolveStoragePath();
 
@@ -170,6 +142,27 @@ class Pimple
 				$c['path.storage']
 			);
 		};
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function loadEnv()
+	{
+		$envFile = "{$this->rootPath}/.env";
+		if (file_exists($envFile)) {
+			$envLoader = new Loader("{$this->rootPath}/.env");
+			$envLoader->parse();
+
+			$this->env = $envLoader->toArray();
+		}
+
+		foreach (['api_token','storage_path','access_token','access_password'] as $var) {
+			$value = getenv("PHAGRANCY_" . strtoupper($var));
+			$this->env[$var] = empty($value) ? ($this->env[$var] ?? null) : $value;
+		}
+
+		return $this->env;
 	}
 
 	private function resolveStoragePath(): string
