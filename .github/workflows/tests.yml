@@ -9,7 +9,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     services:
       phagrancy-app:
-        image: serversideup/php-8.0-fpm-nginx
+        image: serversideup/php:8.0-fpm-nginx
         options: --name phagrancy-app
         ports:
           - "8080:8080"
