@@ -8,6 +8,8 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response\Json;
+use Phagrancy\Model\Input\BoxUpload;
+use Phagrancy\Model\Repository\Box;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
 
 class UploadPreFlightTest
@@ -29,7 +31,12 @@ class UploadPreFlightTest
 
 	protected function runAction($scope, $name, $version, $provider)
 	{
-		$action = new UploadPreFlight();
+		// build the action itself
+		$action = new UploadPreFlight(
+			new Box($this->fs->url()),
+			new BoxUpload(),
+			$this->fs->url()
+		);
 
 		$request = $this->buildRequest();
 		$request->getAttribute('route')

@@ -1,0 +1,29 @@
+{
+  "variables": {
+    "version": "1.2.3-alpha-direct",
+    "architecture": "amd64"
+  },
+  "builders": [
+    {
+      "type": "file",
+      "content": "kakaw",
+      "target": "/dev/null"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "artifice",
+        "files": ["test.box"]
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "test/test",
+        "access_token": "token",
+        "vagrant_cloud_url": "http://127.0.0.1:8080/api/v1",
+        "version": "{{user `version`}}",
+        "insecure_skip_tls_verify": true
+      }
+    ]
+  ]
+}

@@ -27,6 +27,9 @@ trait ReturnsUrlForBox
 		isset($params['version']) && $url[] = "version/{$params['version']}";
 		isset($params['provider']) && $url[] = "provider/{$params['provider']}";
 
+		// should we validate the architecture is approved? i386,amd64,aarch64
+		isset($params['architecture']) && $url[] = $params['architecture'];
+
 		return '/api/v1/box/' . join('/', $url);
 	}
 }

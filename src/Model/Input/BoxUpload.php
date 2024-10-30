@@ -12,7 +12,7 @@ use Validator\LIVR;
 /**
  * Input for the BoxUpload
  *
- * Validates the scope, name, version, provider
+ * Validates the scope, name, version, provider, architecture
  *
  * @package Phagrancy\Model\Input
  */
@@ -24,10 +24,11 @@ class BoxUpload
 	{
 		LIVR::registerDefaultRules(
 			[
-				'scope'    => [$this, 'validateScope'],
-				'name'     => [$this, 'validateBoxName'],
-				'version'  => [$this, 'validateVersion'],
-				'provider' => [$this, 'validateProvider']
+				'scope'        => [$this, 'validateScope'],
+				'name'         => [$this, 'validateBoxName'],
+				'version'      => [$this, 'validateVersion'],
+				'provider'     => [$this, 'validateProvider'],
+				'architecture' => [$this, 'validateArchitecture'],
 			]);
 	}
 
@@ -36,10 +37,11 @@ class BoxUpload
 		return $this->perform(
 			$params,
 			[
-				'scope'    => self::$SCOPE_RULE,
-				'name'     => self::$BOX_NAME_RULE,
-				'version'  => self::$VERSION_RULE,
-				'provider' => ['required', 'trim', 'to_lc']
+				'scope'        => self::$SCOPE_RULE,
+				'name'         => self::$BOX_NAME_RULE,
+				'version'      => self::$VERSION_RULE,
+				'provider'     => ['required', 'trim', 'to_lc'],
+				'architecture' => ['trim', 'to_lc']
 			]);
 	}
 }

@@ -8,8 +8,8 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Input;
-use Phagrancy\Model\Repository;
+use Phagrancy\Model\Entity\Box;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -18,75 +18,36 @@ use Psr\Http\Message\ServerRequestInterface;
  * @package Phagrancy\Action\Api\Scope\Box
  */
 class Upload
+	extends UploadAction
 {
-	/**
-	 * @var Repository\Box
-	 */
-	private $boxes;
-
-	/**
-	 * @var string
-	 */
-	private $uploadPath;
-
-	/**
-	 * @var Input\BoxUpload
-	 */
-	private $input;
-
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
+	public function perform(ServerRequestInterface $request, Box $box, $params): ResponseInterface
 	{
-		$this->boxes      = $boxes;
-		$this->input      = $input;
-		$this->uploadPath = $uploadPath;
-	}
-
-	public function __invoke(ServerRequestInterface $request)
-	{
-		/**
-		 * The route controls these params, and they are validated so safe
-		 *
-		 * @var string $name
-		 * @var string $scope
-		 * @var string $version
-		 * @var string $provider
-		 */
-		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		if (!$params) {
-			return new Response\NotFound();
-		}
-
 		extract($params);
-		$box = $this->boxes->ofNameInScope($name, $scope);
-		$path = "{$this->uploadPath}/{$box->path()}/{$version}/";
 
-		// If box with same version and provider already exists prevent overwriting
-		if (file_exists("$path/{$provider}.box")) {
-			return new Response\NotFound();
+		if (!file_exists("{$this->uploadPath}/tmp")) {
+			mkdir("{$this->uploadPath}/tmp", 0755, true);
+		}
+		$tmp = tempnam("{$this->uploadPath}/tmp", 'phagrancy');
+
+		$request->getBody()->detach();
+		$from = fopen("php://input", 'r');
+		$to   = fopen($tmp, 'w');
+
+		stream_copy_to_stream($from, $to);
+		fclose($from);
+		fclose($to);
+
+		// make sure it exists
+		if (!file_exists($path = "{$this->uploadPath}/{$box->path()}/{$version}/")) {
+			mkdir($path, 0755, true);
 		}
 
-		if ($box) {
-			if (!file_exists("{$this->uploadPath}/tmp")) {
-				mkdir("{$this->uploadPath}/tmp", 0755, true);
-			}
-			$tmp = tempnam("{$this->uploadPath}/tmp", 'phagrancy');
+		// the box name is now {provider}-{architecture}.box, if there is no architecture, then we don't worry
+		$architecture = $architecture ?? 'unknown';
+		$boxPath = "$path/{$provider}-{$architecture}.box";
 
-			$request->getBody()->detach();
-			$from = fopen("php://input", 'r');
-			$to   = fopen($tmp, 'w');
+		rename($tmp, $boxPath);
 
-			stream_copy_to_stream($from, $to);
-			fclose($from);
-			fclose($to);
-
-			// make sure it exists
-			if (!file_exists($path)) {
-				mkdir($path, 0755, true);
-			}
-
-			rename($tmp, "$path/{$provider}.box");
-		}
-
-		return new Response\Json([]);
+		return new Response\AllClear();
 	}
 }

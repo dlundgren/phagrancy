@@ -47,22 +47,24 @@ class UploadTest
 	{
 		$response = $this->uploadBox('uploading');
 
-		self::assertEquals('uploading', file_get_contents($this->fs->url() . '/test/upload/1.0/test.box'));
+		self::assertEquals('uploading', file_get_contents($this->fs->url() . '/test/upload/1.0/test-unknown.box'));
 		self::assertInstanceOf(Json::class, $response);
 		self::assertResponseHasStatus($response, 200);
 
 		$response->getBody()->close();
 	}
 
-	public function testReturnsNotFoundForAlreadyUploadedBox()
+	public function testReturnsErrorForAlreadyUploadedBox()
 	{
 		$this->testReturnsOkForExistingBox();
 
 		$response = $this->uploadBox('override box');
 
-		self::assertNotEquals('override box', file_get_contents($this->fs->url() . '/test/upload/1.0/test.box'));
+		self::assertNotEquals('override box', file_get_contents($this->fs->url() . '/test/upload/1.0/test-unknown.box'));
 		self::assertInstanceOf(Json::class, $response);
-		self::assertResponseHasStatus($response, 404);
+		self::assertResponseHasStatus($response, 409);
+
+		// test we get {"errors":["box already exists: test\/upload\/test\/unknown"]}
 
 		$response->getBody()->close();
 	}

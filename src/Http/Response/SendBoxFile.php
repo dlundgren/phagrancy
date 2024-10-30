@@ -7,6 +7,7 @@
 
 namespace Phagrancy\Http\Response;
 
+use Phagrancy\Model\Entity\Box;
 use Slim\Http\Headers;
 use Slim\Http\Response;
 use Slim\Http\Stream;
@@ -19,8 +20,9 @@ use Slim\Http\Stream;
 class SendBoxFile
 	extends Response
 {
-	public function __construct($box, $version, $provider, $file)
+	public function __construct(Box $box, string $version, string $provider, string $file)
 	{
+		$filename = "{$box->name()}-{$provider}-{$version}.box";
 		parent::__construct(
 			200,
 			new Headers(
@@ -28,8 +30,9 @@ class SendBoxFile
 					'Cache-Control'       => "must-revalidate",
 					'Expires'             => 0,
 					'Content-Type'        => 'application/octet-stream',
-					'Content-Disposition' => 'attachment; filename="' . "{$box->name()}-{$provider}-{$version}.box" . '"'
-				]),
+					'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+				]
+			),
 			new Stream(fopen($file, 'rb'))
 		);
 	}
