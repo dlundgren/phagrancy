@@ -62,6 +62,7 @@ jobs:
 
       - name: Code Climate Coverage Action Test
         uses: MartinNuc/codeclimate-action@1
+        if: matrix.analysis
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TEST_REPORTER_ID }}
         with:
