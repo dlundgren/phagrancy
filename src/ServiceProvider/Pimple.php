@@ -38,7 +38,27 @@ class Pimple
 		$this->rootPath = $rootPath;
 	}
 
-	public function register(Container $di)
+	/**
+	 * @return mixed
+	 */
+	private function loadEnv()
+	{
+		$envFile = "{$this->rootPath}/.env";
+		if (file_exists($envFile)) {
+			$envLoader = new Loader("{$this->rootPath}/.env");
+			$envLoader->parse();
+
+			$this->env = $envLoader->toArray();
+		}
+		foreach (['api_token','storage_path','access_token','access_password'] as $var) {
+			$value = getenv("PHAGRANCY_" . strtoupper($var));
+			$this->env[$var] = empty($value) ? ($this->env[$var] ?? null) : $value;
+		}
+
+		return $this->env;
+	}
+
+	public function register(Container $di): void
 	{
 		$envFile = "{$this->rootPath}/.env";
 		if (file_exists($envFile)) {
@@ -48,7 +68,7 @@ class Pimple
 			$this->env = $envLoader->toArray();
 		}
 
-		$di['env']          = $this->env;
+		$di['env']          = $this->env = $this->loadEnv();
 		$di['path.storage'] = $this->resolveStoragePath();
 
 		// Authorization middleware
@@ -73,9 +93,9 @@ class Pimple
 		};
 
 		// action handlers
-        $di[Action\Scopes::class] = function ($c) {
+		$di[Action\Scopes::class] = function ($c) {
 			return new Action\Scopes($c[Repository\Scope::class], new Input\Scope());
-        };
+		};
 
 		$di[Action\Scope\Index::class] = function ($c) {
 			return new Action\Scope\Index($c[Repository\Scope::class], new Input\Scope());
@@ -152,7 +172,7 @@ class Pimple
 		};
 	}
 
-	private function resolveStoragePath()
+	private function resolveStoragePath(): string
 	{
 		$path = "data/storage";
 		if (isset($this->env['storage_path'])) {

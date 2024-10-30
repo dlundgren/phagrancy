@@ -33,11 +33,17 @@
         "mikey179/vfsstream": "~1.6",
         "helmich/phpunit-psr7-assert": "~4.1",
         "syberisle/mock-php-stream": "~1.1",
-        "phpstan/phpstan": "^1.12"
+        "phpstan/phpstan": "^1.12",
+        "symfony/process": "^5.4"
     },
     "scripts" : {
-        "test": "vendor/bin/phpunit",
+        "test-packer": [
+          "@putenv PHAGRANCY_TEST_USE_DOCKER_COMPOSE=1",
+          "vendor/bin/phpunit --testsuite Packer"
+        ],
+        "test": "vendor/bin/phpunit --testsuite Phagrancy",
+        "ci-test": "vendor/bin/phpunit --testsuite Phagrancy,Packer",
         "stan": "vendor/bin/phpstan analyze src",
-        "test-coverage": "vendor/bin/phpunit --coverage-clover build/logs/clover.xml"
+        "test-coverage": "vendor/bin/phpunit --testsuite Phagrancy --coverage-clover build/logs/clover.xml"
     }
 }

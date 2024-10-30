@@ -1,0 +1,35 @@
+{
+  "variables": {
+    "version": "1.2.3-alpha",
+    "architecture": "arm64"
+  },
+  "builders": [
+    {
+      "type": "file",
+      "content": "kakaw",
+      "target": "dummy"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "artifice",
+        "files": ["test/box.ovf"]
+      },
+      {
+        "type": "vagrant",
+        "keep_input_artifact": true,
+        "provider_override": "virtualbox"
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "test/test",
+        "access_token": "token",
+        "no_direct_upload": true,
+        "vagrant_cloud_url": "http://127.0.0.1:8080/api/v1",
+        "version": "{{user `version`}}",
+        "insecure_skip_tls_verify": true
+      }
+    ]
+  ]
+}

@@ -7,6 +7,20 @@ jobs:
     name: Tests PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
+    services:
+      phagrancy-app:
+        image: serversideup/php-8.0-fpm-nginx
+        options: --name phagrancy-app
+        ports:
+          - "8080:8080"
+        volumes:
+          - "${{ github_workspace }}:/var/www/html"
+        env:
+          # serversideup/php
+          NGINX_WEBROOT: "/var/www/html/web"
+          # PHAGRANCY
+          PHAGRANCY_API_TOKEN: "token"
+          PHAGRANCY_STORAGE_PATH: "/tmp"
     strategy:
       fail-fast: false
       matrix:
@@ -22,6 +36,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Restart app container
+        uses: docker://docker
+        with:
+          args: docker restart phagrancy-app
+
+      - name: Packer Setup
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "latest"
+
       - name: Set up PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
@@ -32,11 +56,11 @@ jobs:
         uses: ramsey/composer-install@v1
 
       - name: Tests
-        run: composer test
+        run: composer ci-test
 
       - name: Code Climate Coverage Action Test
         uses: MartinNuc/codeclimate-action@1
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TEST_REPORTER_ID }}
         with:
-            coverageCommand: composer test-coverage
+          coverageCommand: composer test-coverage

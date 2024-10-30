@@ -1,0 +1,17 @@
+---
+services:
+  app:
+    image: serversideup/php:8.0-fpm-nginx
+    container_name: phagrancy-app
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - "${PWD}/../../:/var/www/html"
+    environment:
+      # serversideup/php
+      PHP_OPCACHE_ENABLE: 0
+      NGINX_WEBROOT: "/var/www/html/web"
+      # PHAGRANCY
+      PHAGRANCY_API_TOKEN: "token"
+      PHAGRANCY_STORAGE_PATH: "/tmp"

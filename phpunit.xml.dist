@@ -17,6 +17,10 @@
   <testsuites>
     <testsuite name="Phagrancy">
       <directory>./tests/</directory>
+        <exclude>./tests/packer/PackerTest.php</exclude>
+    </testsuite>
+    <testsuite name="Packer">
+      <file>./tests/packer/PackerTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>
