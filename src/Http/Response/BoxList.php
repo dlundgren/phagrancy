@@ -19,10 +19,12 @@ class BoxList
 {
 	public function __construct(Entity\Scope $scope)
 	{
+		$boxes = $scope->boxes();
+		asort($boxes);
 		parent::__construct(
 			[
 				'username' => $scope->name(),
-				'boxes'    => $scope->boxes()
+				'boxes'    => array_values($boxes)
 			]);
 	}
 }

@@ -22,6 +22,17 @@ class IndexTest
 
 		self::assertInstanceOf(BoxList::class, $response);
 		self::assertResponseHasStatus($response, 200);
+		self::assertMessageBodyEqualsJsonArray(
+			$response,
+			[
+				'username' => 'test',
+				'boxes' => [
+					'delete',
+					'multi',
+					'test'
+				]
+			]
+		);
 	}
 
 	public function testReturns404()

@@ -99,7 +99,7 @@ abstract class UploadAction
 
 		// If box with same version and provider already exists prevent overwriting
 		if (file_exists($boxPath)) {
-			return new Response\Json(['errors'=>["box already exists: {$box->path()}/$provider/$architecture"]], 409);
+			return new Response\Json(['errors' => ["box already exists: {$box->path()}/$provider/$architecture"]], 409);
 		}
 
 		return $box ?? new Response\AllClear();

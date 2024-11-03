@@ -8,42 +8,99 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response\Json;
+use Phagrancy\Http\Response\NotFound;
 use Phagrancy\Model\Input\BoxDelete;
 use Phagrancy\Model\Repository\Box;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
 
 class DeleteTest
-    extends ScopeTestCase
+	extends ScopeTestCase
 {
-    public function testReturnsOkAndRemovesExistingBox()
-    {
-        $request = $this->buildRequest();
-        $request->getAttribute('route')
-                ->setArguments(
-                    [
-                        'scope'    => 'test',
-                        'name'     => 'delete',
-                        'version'  => '1.0.0',
-                        'provider' => 'test'
-                    ]);
+	public function testNotFoundReturned()
+	{
+		$request = $this->buildRequest();
+		$request->getAttribute('route')
+			->setArguments(
+				[
+					'scope'    => 'test',
+					'name'     => 'kakaw',
+					'version'  => '1.0.0',
+					'provider' => 'test'
+				]
+			);
 
-        // build the action itself
-        $action = new Delete(
-            new Box($this->fs->url()),
-            new BoxDelete(),
-            $this->fs->url()
-        );
+		// build the action itself
+		$action = new Delete(
+			new Box($this->fs->url()),
+			new BoxDelete(),
+			$this->fs->url()
+		);
 
-        // box file exists before action
-        self::assertTrue(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
+		self::assertInstanceOf(NotFound::class, $action($request));
+	}
 
-        $response = $action($request);
+	public function testReturnsUnableToDelete()
+	{
+		chmod(
+			$this->fs->url() . '/test/delete/1.0.0/test.box',
+			0000
+		);
+		$request = $this->buildRequest();
+		$request->getAttribute('route')
+			->setArguments(
+				[
+					'scope'    => 'test',
+					'name'     => 'delete',
+					'version'  => '1.0.0',
+					'provider' => 'test'
+				]
+			);
 
-        // file was removed
-        self::assertFalse(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
-        self::assertInstanceOf(Json::class, $response);
-        self::assertResponseHasStatus($response, 200);
+		// build the action itself
+		$action = new Delete(
+			new Box($this->fs->url()),
+			new BoxDelete(),
+			$this->fs->url()
+		);
 
-        $response->getBody()->close();
-    }
+		$response = $action($request);
+		self::assertResponseHasStatus($response, 409);
+		self::assertMessageBodyEqualsJsonArray(
+			$response,
+			['errors' => 'unable to delete']
+		);
+	}
+
+	public function testReturnsOkAndRemovesExistingBox()
+	{
+		$request = $this->buildRequest();
+		$request->getAttribute('route')
+			->setArguments(
+				[
+					'scope'    => 'test',
+					'name'     => 'delete',
+					'version'  => '1.0.0',
+					'provider' => 'test'
+				]
+			);
+
+		// build the action itself
+		$action = new Delete(
+			new Box($this->fs->url()),
+			new BoxDelete(),
+			$this->fs->url()
+		);
+
+		// box file exists before action
+		self::assertTrue(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
+
+		$response = $action($request);
+
+		// file was removed
+		self::assertFalse(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
+		self::assertInstanceOf(Json::class, $response);
+		self::assertResponseHasStatus($response, 200);
+
+		$response->getBody()->close();
+	}
 }

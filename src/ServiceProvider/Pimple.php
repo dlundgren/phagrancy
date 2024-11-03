@@ -41,7 +41,7 @@ class Pimple
 	public function register(Container $di): void
 	{
 		$di['env']          = $this->env = $this->loadEnv();
-		$di['path.storage'] = $this->resolveStoragePath();
+		$di['path.storage'] = $this->resolvePathFromEnv('storage_path', $this->rootPath);
 
 		// Authorization middleware
 		$di[Middleware\ValidateAccessToken::class] = function ($c) {
@@ -66,7 +66,7 @@ class Pimple
 
 		// action handlers
 		$di[Action\Scopes::class] = function ($c) {
-			return new Action\Scopes($c[Repository\Scope::class], new Input\Scope());
+			return new Action\Scopes($c[Repository\Scope::class]);
 		};
 
 		$di[Action\Scope\Index::class] = function ($c) {
@@ -165,17 +165,12 @@ class Pimple
 		return $this->env;
 	}
 
-	private function resolveStoragePath(): string
+	private function resolvePathFromEnv(string $variable, string $defaultPath): string
 	{
-		$path = "data/storage";
-		if (isset($this->env['storage_path'])) {
-			$path = $this->env['storage_path'];
-		}
+		$path = $this->env[$variable] ?? $defaultPath;
 
-		if ($path[0] !== '/') {
-			$path = "{$this->rootPath}/{$path}";
-		}
-
-		return $path;
+		return $path[0] === '/'
+			? $path
+			: "{$this->rootPath}/{$path}";
 	}
 }

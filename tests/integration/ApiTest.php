@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains Phagrancy\ApiTest
+ * Contains Phagrancy\Integration\ApiTest
  */
 
-namespace Phagrancy;
+namespace Phagrancy\Integration;
 
 use Phagrancy\Http\Response;
 use Phagrancy\TestCase\Integration;
@@ -13,7 +13,6 @@ use Phagrancy\TestCase\Integration;
 class ApiTest
 	extends Integration
 {
-
 	public function provideNotFoundRoutes()
 	{
 		return [

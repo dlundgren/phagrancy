@@ -8,9 +8,7 @@
 namespace Phagrancy\Action;
 
 use Phagrancy\Http\Response;
-use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Action for listing the boxes in a given scope
@@ -19,27 +17,15 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Scopes
 {
-	/**
-	 * @var Repository\Scope
-	 */
-	private $repository;
+	private Repository\Scope $repository;
 
-	/**
-	 * @var Input\Scope
-	 */
-	private $validator;
-
-	public function __construct(Repository\Scope $repository, Input\Scope $validator)
+	public function __construct(Repository\Scope $repository)
 	{
 		$this->repository = $repository;
-		$this->validator  = $validator;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke()
 	{
-		$params = $this->validator->validate($request->getAttribute('route')->getArguments());
-		$scopes   = $this->repository->all();
-
-		return new Response\ScopeList($scopes);
+		return new Response\ScopeList($this->repository->all());
 	}
 }

@@ -5,7 +5,7 @@
  * Contains Phagrancy\PackerTest
  */
 
-namespace packer;
+namespace Phagrancy;
 
 use Phagrancy\TestCase\Integration;
 use Symfony\Component\Process\ExecutableFinder;

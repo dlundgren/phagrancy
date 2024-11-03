@@ -9,13 +9,18 @@ namespace Phagrancy\Model\Input;
 
 use PHPUnit\Framework\TestCase;
 
-class VersionValidator {
-	use ValidatesVersion;
-}
-
 class ValidatesVersionTest
 	extends TestCase
 {
+	protected $validator;
+
+	public function setUp(): void
+	{
+		$this->validator = new class {
+			use ValidatesVersion;
+		};
+	}
+
 	public function provideGoodVersions()
 	{
 		return [
@@ -49,9 +54,7 @@ class ValidatesVersionTest
 	 */
 	public function testOkVersions($version)
 	{
-		$c = new VersionValidator();
-		$f = $c->validateVersion();
-		self::assertEmpty($f($version));
+		self::assertEmpty($this->validator->validateVersion()($version));
 	}
 
 	/**
@@ -59,10 +62,8 @@ class ValidatesVersionTest
 	 */
 	public function testBadVersions($version)
 	{
-		$c = new VersionValidator();
-
-		$f = $c->validateVersion();
-		self::assertNotEmpty($f($version));
+		self::assertNotEmpty($this->validator->validateVersion()($version));
 	}
 
+	public function createValidator() {}
 }

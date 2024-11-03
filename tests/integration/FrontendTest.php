@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains Phagrancy\FrontendTest
+ * Contains Phagrancy\Integration\FrontendTest
  */
 
-namespace Phagrancy;
+namespace Phagrancy\Integration;
 
 use Phagrancy\Http\Response;
 use Phagrancy\TestCase\Integration;
@@ -13,7 +13,6 @@ use Phagrancy\TestCase\Integration;
 class FrontendTest
 	extends Integration
 {
-
 	public function provideNotFoundRoutes()
 	{
 		return [

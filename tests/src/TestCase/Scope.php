@@ -8,9 +8,8 @@
 namespace Phagrancy\TestCase;
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 use Phagrancy\Model\Repository\IdentityMap;
-use PHPUnit\Framework\Assert;
-use Psr\Http\Message\ResponseInterface;
 
 abstract class Scope
 	extends Action
@@ -45,20 +44,19 @@ abstract class Scope
 					'test.box' => 'test'
 				]
 			],
-            'delete' => [
-                '1.0.0' => [
-                    'test.box' => 'testcontent'
-                ]
-            ]
+			'delete' => [
+				'1.0.0' => [
+					'test.box' => 'testcontent'
+				]
+			]
 		]
 	];
 
-	protected $fs;
+	protected vfsStreamDirectory $fs;
 
 	protected function setUp(): void
 	{
 		IdentityMap::clear();
 		$this->fs = vfsStream::setup('scope', null, $this->scope);
 	}
-
 }
