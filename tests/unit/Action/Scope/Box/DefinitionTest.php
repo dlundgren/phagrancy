@@ -77,7 +77,7 @@ class DefinitionTest
 	protected function runAction($scope, $name)
 	{
 		$action = new Definition(
-			new BoxRepository($this->fs->url()),
+			new BoxRepository($this->storage),
 			new BoxInput()
 		);
 

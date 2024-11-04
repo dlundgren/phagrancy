@@ -41,7 +41,7 @@ class SendFileTest
 	protected function runAction($scope, $name, $version, $provider)
 	{
 		$action = new SendFile(
-			new BoxRepository($this->fs->url()),
+			new BoxRepository($this->storage),
 			new BoxUpload(),
 			$this->fs->url()
 		);

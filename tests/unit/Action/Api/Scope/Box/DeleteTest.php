@@ -31,7 +31,7 @@ class DeleteTest
 
 		// build the action itself
 		$action = new Delete(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxDelete(),
 			$this->fs->url()
 		);
@@ -58,7 +58,7 @@ class DeleteTest
 
 		// build the action itself
 		$action = new Delete(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxDelete(),
 			$this->fs->url()
 		);
@@ -86,7 +86,7 @@ class DeleteTest
 
 		// build the action itself
 		$action = new Delete(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxDelete(),
 			$this->fs->url()
 		);

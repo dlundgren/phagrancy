@@ -33,7 +33,7 @@ class UploadPreFlightTest
 	{
 		// build the action itself
 		$action = new UploadPreFlight(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxUpload(),
 			$this->fs->url()
 		);

@@ -46,20 +46,20 @@ class FrontendTest
 					'name'     => 'test/test',
 					'versions' => [
 						[
-							'version'   => '200',
-							'providers' => [
-								[
-									'name' => 'test',
-									'url'  => 'http://localhost/test/test/200/test'
-								]
-							]
-						],
-						[
 							'version'   => '2.0.0',
 							'providers' => [
 								[
 									'name' => 'test',
 									'url'  => 'http://localhost/test/test/2.0.0/test'
+								]
+							]
+						],
+						[
+							'version'   => '200',
+							'providers' => [
+								[
+									'name' => 'test',
+									'url'  => 'http://localhost/test/test/200/test'
 								]
 							]
 						]
@@ -76,6 +76,13 @@ class FrontendTest
 	{
 		$response = $this->runApp($method, $path);
 
+		if ($path === '/sacopes') {
+			$b = $response->getBody();
+			$b->rewind();
+
+			var_dump($b->getContents());
+			die();
+		}
 		self::assertInstanceOf($responseClass, $response);
 		self::assertResponseHasStatus($response, 200);
 		self::assertMessageBodyEqualsJsonArray($response, $expected);

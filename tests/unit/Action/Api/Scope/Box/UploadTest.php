@@ -32,7 +32,7 @@ class UploadTest
 
 		// build the action itself
 		$action = new Upload(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxUpload(),
 			$this->fs->url()
 		);

@@ -8,10 +8,13 @@
 namespace Phagrancy\ServiceProvider;
 
 use josegonzalez\Dotenv\Loader;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Phagrancy\Action;
 use Phagrancy\Http\Middleware;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Phagrancy\Service\Storage;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -55,13 +58,22 @@ class Pimple
 			);
 		};
 
+		// storage
+		$di['storage.box'] = function () {
+			return new Storage(
+				new Filesystem(
+					new LocalFilesystemAdapter($this->resolvePathFromEnv('storage_path', $this->rootPath))
+				)
+			);
+		};
+
 		// register repositories
 		$di[Repository\Scope::class] = function ($c) {
-			return new Repository\Scope($c['path.storage']);
+			return new Repository\Scope($c['storage.box']);
 		};
 
 		$di[Repository\Box::class] = function ($c) {
-			return new Repository\Box($c['path.storage']);
+			return new Repository\Box($c['storage.box']);
 		};
 
 		// action handlers

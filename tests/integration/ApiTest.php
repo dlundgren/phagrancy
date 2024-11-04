@@ -42,15 +42,6 @@ class ApiTest
 					'tag'      => 'test/test',
 					'versions' => [
 						[
-							'version'   => '200',
-							'providers' => [
-								[
-									'name' => 'test',
-									'url'  => 'http://localhost/api/v1/box/test/test/version/200/provider/test'
-								]
-							],
-						],
-						[
 							'version'   => '2.0.0',
 							'providers' => [
 								[
@@ -58,8 +49,16 @@ class ApiTest
 									'url'  => 'http://localhost/api/v1/box/test/test/version/2.0.0/provider/test'
 								]
 							]
+						],
+						[
+							'version'   => '200',
+							'providers' => [
+								[
+									'name' => 'test',
+									'url'  => 'http://localhost/api/v1/box/test/test/version/200/provider/test'
+								]
+							],
 						]
-
 					]
 				]
 			],

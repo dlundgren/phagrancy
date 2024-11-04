@@ -8,10 +8,13 @@
 namespace Phagrancy\TestCase;
 
 use Helmich\Psr7Assert\Psr7Assertions;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 use Phagrancy\App;
+use Phagrancy\Service\Storage;
 use Phagrancy\ServiceProvider\Pimple;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
@@ -73,24 +76,20 @@ abstract class Integration
 		]
 	];
 
-	/**
-	 * @var vfsStreamDirectory
-	 */
-	protected $fs;
+	protected vfsStreamDirectory $fs;
 
-	/**
-	 * @var App
-	 */
-	protected $app;
+	protected App $app;
+
+	protected Storage $storage;
 
 	protected function setUp(): void
 	{
 		$this->fs = vfsStream::setup('integration', null, $this->spec);
-	}
-
-	protected function buildApp()
-	{
-
+		$this->storage = new Storage(
+			new Filesystem(
+				new LocalFilesystemAdapter($this->fs->url() . "/data/storage")
+			)
+		);
 	}
 
 	/**
@@ -136,7 +135,9 @@ abstract class Integration
 
 			$this->app = new App($container);
 		}
-		$this->app->getContainer()['request'] = $request;
+		$container = $this->app->getContainer();
+		$container['request'] = $request;
+		$container['storage.box'] = $this->storage;
 
 		return $this->app->run(true);
 	}
