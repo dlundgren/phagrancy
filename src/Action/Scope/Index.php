@@ -10,6 +10,7 @@ namespace Phagrancy\Action\Scope;
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -19,15 +20,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Index
 {
-	/**
-	 * @var Repository\Scope
-	 */
-	private $repository;
+	private Repository\Scope $repository;
 
-	/**
-	 * @var Input\Scope
-	 */
-	private $input;
+	private Input\Scope $input;
 
 	public function __construct(Repository\Scope $repository, Input\Scope $input)
 	{
@@ -35,15 +30,13 @@ class Index
 		$this->input      = $input;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		$scope  = $this->repository->ofName($params['scope'] ?? '');
+		$vagrant = $this->input->validate($request->getAttribute('route')->getArguments());
+		$scope   = $this->repository->ofName($vagrant->scope ?? '');
 
-		if (!$scope) {
-			return new Response\NotFound();
-		}
-
-		return new Response\BoxList($scope);
+		return $scope
+			? new Response\BoxList($scope)
+			: new Response\NotFound();
 	}
 }

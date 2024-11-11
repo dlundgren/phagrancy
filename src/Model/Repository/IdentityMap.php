@@ -14,10 +14,7 @@ namespace Phagrancy\Model\Repository;
  */
 class IdentityMap
 {
-	/**
-	 * @var array cache of items
-	 */
-	private static $map = [];
+	private static array $map = [];
 
 	/**
 	 * Prevents the identitymap from being instantiated
@@ -43,7 +40,7 @@ class IdentityMap
 	 * @param string $id   The id of the object to retrieve
 	 * @return mixed|null  The item if it exists or null
 	 */
-	public static function get($type, $id)
+	public static function get($type, string $id)
 	{
 		if (is_object($type)) {
 			$type = get_class($type);
@@ -60,7 +57,7 @@ class IdentityMap
 	 * @param object $entity The item to save
 	 * @param string $id     The items id
 	 */
-	public static function set($entity, $id)
+	public static function set($entity, string $id): void
 	{
 		$key = get_class($entity) . ".{$id}";
 		if (isset(self::$map[$key])) {
@@ -73,9 +70,9 @@ class IdentityMap
 	/**
 	 * @param object|string $type The item or name of object
 	 * @param string        $id   The id of the item
-	 * @return bool Whether or not it exists
+	 * @return bool Whether it exists
 	 */
-	public static function exists($type, $id)
+	public static function exists($type, string $id): bool
 	{
 		if (is_object($type)) {
 			$type = get_class($type);
@@ -83,5 +80,4 @@ class IdentityMap
 
 		return isset(self::$map["{$type}.{$id}"]);
 	}
-
 }

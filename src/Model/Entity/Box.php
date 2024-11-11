@@ -14,56 +14,35 @@ namespace Phagrancy\Model\Entity;
  */
 class Box
 {
-	/**
-	 * @var string The name of the box
-	 */
-	private $name;
+	private string $name;
 
-	/**
-	 * @var string The scope of the box
-	 */
-	private $scope;
+	private string $scope;
 
-	/**
-	 * @var array The box versions
-	 */
-	private $versions;
+	private array $versions;
 
-	public function __construct($name, $scope, $versions)
+	public function __construct(string $name, string $scope, array $versions)
 	{
 		$this->name     = $name;
 		$this->scope    = $scope;
 		$this->versions = $versions;
 	}
 
-	/**
-	 * @return string The name of the box
-	 */
-	public function name()
+	public function name(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return string The path (tag) of the box
-	 */
-	public function path()
+	public function path(): string
 	{
 		return "{$this->scope}/{$this->name}";
 	}
 
-	/**
-	 * @return string The boxes scope
-	 */
-	public function scope()
+	public function scope(): string
 	{
 		return $this->scope;
 	}
 
-	/**
-	 * @return array The versions of the box
-	 */
-	public function versions()
+	public function versions(): array
 	{
 		return $this->versions;
 	}

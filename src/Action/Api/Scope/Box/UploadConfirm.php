@@ -2,12 +2,13 @@
 
 /**
  * @file
- * Contains Phagrancy\Action\Api\Scope\Box\UploadPreFlight
+ * Contains Phagrancy\Action\Api\Scope\Box\UploadConfirm
  */
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -22,15 +23,13 @@ class UploadConfirm
 	 * @param ServerRequestInterface $request
 	 * @return Response\Json|Response\NotFound
 	 */
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
 		$response = $this->validate($request);
-		if ($response instanceof Response\Json) {
-			// box already exists...
-			return new Response\AllClear();
-		}
-		else {
-			return new Response\Json(['errors' => ['not uploaded']], 409);
-		}
+
+		// reverse the logic as an error means the box was uploaded
+		return $response instanceof Response\Error
+			? new Response\AllClear()
+			: new Response\Error('not uploaded');
 	}
 }

@@ -7,9 +7,7 @@
 
 namespace Phagrancy\Http\Middleware;
 
-use Phagrancy\Http\Response\NotAuthorized;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 /**
  * Provides HTTP Basic Authentication password check
@@ -18,26 +16,12 @@ use Slim\Http\Response;
  */
 trait ValidatesPassword
 {
-	/**
-	 * @var string|null The password
-	 */
-	private $password;
+	private ?string $password;
 
-	/**
-	 * Validates the password
-	 *
-	 * @param Request $request
-	 * @return bool True if there is no password defined, or if the Request password matches
-	 */
 	private function validatePassword(Request $request)
 	{
-		if ($this->password === null) {
-			return true;
-		}
+		$ary = explode(':', $request->getUri()->getUserInfo());
 
-		$ary  = explode(':', $request->getUri()->getUserInfo());
-		$pass = isset($ary[1]) ? $ary[1] : null;
-
-		return $this->password === $pass;
+		return empty($this->password) || $this->password === ($ary[1] ?? null);
 	}
 }

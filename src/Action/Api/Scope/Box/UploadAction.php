@@ -1,44 +1,43 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Action\Api\Scope\Box\UploadAction
+ */
+
+
 namespace Phagrancy\Action\Api\Scope\Box;
 
+use Phagrancy\Concern\FindsBox;
+use Phagrancy\Http\Context\Vagrant;
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Entity\Box;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Phagrancy\Service\Storage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 abstract class UploadAction
 {
-	/**
-	 * @var Repository\Box
-	 */
-	protected $boxes;
+	use FindsBox;
 
-	/**
-	 * @var Input\BoxUpload
-	 */
-	protected $input;
+	protected Repository\Box $boxes;
 
-	/**
-	 * @var array List of validated parameters
-	 */
-	protected $params = [];
+	protected Input\BoxUpload $input;
 
-	/**
-	 * @var string
-	 */
-	protected $uploadPath;
+	protected Vagrant $params;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
+	protected Storage $storage;
+
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, Storage $storage)
 	{
-		$this->boxes      = $boxes;
-		$this->input      = $input;
-		$this->uploadPath = $uploadPath;
+		$this->boxes   = $boxes;
+		$this->input   = $input;
+		$this->storage = $storage;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
 		$box = $this->validate($request);
 
@@ -50,6 +49,7 @@ abstract class UploadAction
 	/**
 	 * Not abstract as not all child classes use this method
 	 *
+	 * @param ServerRequestInterface $request
 	 * @param Box $box
 	 * @param $params
 	 * @return ResponseInterface
@@ -67,39 +67,21 @@ abstract class UploadAction
 	 */
 	protected function validate(ServerRequestInterface $request)
 	{
-		if (!is_writable($this->uploadPath)) {
-			if (!is_writable(dirname($this->uploadPath))) {
-				return new Response\InternalServerError("Unable to write to disk: {$this->uploadPath}");
-			}
-			else {
-				mkdir($this->uploadPath);
-			}
+		if (!$this->storage->isAvailable()) {
+			return new Response\InternalServerError("Unable to write to disk");
 		}
 
-		/**
-		 * The route controls these params, and they are validated so safe
-		 *
-		 * @var string $name
-		 * @var string $scope
-		 * @var string $version
-		 * @var string $provider
-		 */
 		$this->params = $this->input->validate($request->getAttribute('route')->getArguments());
-		if (!$this->params) {
+		if ($this->params->isValid()) {
+			$box     = $this->boxes->ofNameInScope($this->params->name, $this->params->scope);
+			$boxPath = $this->findBox($this->params, $this->storage);
+		}
+		else {
 			return new Response\NotFound();
 		}
 
-		extract($this->params);
-		$box = $this->boxes->ofNameInScope($name, $scope);
-		$path = "{$this->uploadPath}/{$box->path()}/{$version}/";
-
-		// the box name is now {provider}-{architecture}.box, if there is no architecture, then we don't worry
-		$architecture = $architecture ?? 'unknown';
-		$boxPath = "$path/{$provider}-{$architecture}.box";
-
-		// If box with same version and provider already exists prevent overwriting
-		if (file_exists($boxPath)) {
-			return new Response\Json(['errors' => ["box already exists: {$box->path()}/$provider/$architecture"]], 409);
+		if (isset($boxPath)) {
+			return new Response\Error("box already exists: {$this->params->errorPath()}");
 		}
 
 		return $box ?? new Response\AllClear();

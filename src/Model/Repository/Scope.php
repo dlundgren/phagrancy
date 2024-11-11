@@ -8,6 +8,7 @@
 namespace Phagrancy\Model\Repository;
 
 use Phagrancy\Model\Entity;
+use Phagrancy\Service\Storage;
 
 /**
  * Repository for the Scopes
@@ -16,52 +17,37 @@ use Phagrancy\Model\Entity;
  */
 class Scope
 {
-	/**
-	 * @var string The path to the scopes
-	 */
-	private $path;
+	private Storage $storage;
 
-	public function __construct($path)
+	public function __construct(Storage $storage)
 	{
-		$this->path = $path;
+		$this->storage = $storage;
 	}
 
 	/**
-	 * @return mixed|null|Entity\Scope[] The scopes
+	 * @return string[] The scopes
 	 */
-	public function all()
+	public function all(): array
 	{
-		$scopes = array_values(array_diff(scandir($this->path), array('.', '..', 'tmp')));
-
-		return $scopes;
+		return $this->storage->directories();
 	}
 
-	/**
-	 * @param string $name The name of the scope to find
-	 * @return mixed|null|Entity\Scope The scope
-	 */
-	public function ofName($name)
+	public function ofName(string $name): ?Entity\Scope
 	{
 		if (empty($name)) {
 			return null;
 		}
+
 		$scope = IdentityMap::get(Entity\Scope::class, $name);
 		if (!$scope) {
-			$dir = "{$this->path}/{$name}";
-			if (!file_exists($dir)) {
+			if (!$this->storage->exists($name)) {
 				return null;
 			}
 
-			// load a list of the boxes for this user
-			/** @var $file \SplFileInfo */
-			$boxes = [];
-			foreach(new \FilesystemIterator($dir) as $path => $file) {
-				if ($file->isDir()) {
-					$boxes[] = $file->getBasename();
-				}
-			}
-			$scope = new Entity\Scope($name, $boxes);
-			IdentityMap::set($scope, $name);
+			IdentityMap::set(
+				$scope = new Entity\Scope($name, $this->storage->directories($name)),
+				$name
+			);
 		}
 
 		return $scope;

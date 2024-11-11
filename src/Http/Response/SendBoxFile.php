@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Phagrancy\Http\Response\SendFile
+ * Contains Phagrancy\Http\Response\SendBoxFile
  */
 
 namespace Phagrancy\Http\Response;

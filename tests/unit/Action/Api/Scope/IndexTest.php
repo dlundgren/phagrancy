@@ -45,7 +45,7 @@ class IndexTest
 	protected function runAction($scope)
 	{
 		$action = new Index(
-			new ScopeRepository($this->fs->url()),
+			new ScopeRepository($this->storage),
 			new ScopeInput()
 		);
 

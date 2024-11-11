@@ -32,9 +32,9 @@ class UploadTest
 
 		// build the action itself
 		$action = new Upload(
-			new Box($this->fs->url()),
+			new Box($this->storage),
 			new BoxUpload(),
-			$this->fs->url()
+			$this->storage
 		);
 		$response = $action($request);
 
@@ -56,8 +56,7 @@ class UploadTest
 
 	public function testReturnsErrorForAlreadyUploadedBox()
 	{
-		$this->testReturnsOkForExistingBox();
-
+		$this->uploadBox('updating');
 		$response = $this->uploadBox('override box');
 
 		self::assertNotEquals('override box', file_get_contents($this->fs->url() . '/test/upload/1.0/test-unknown.box'));

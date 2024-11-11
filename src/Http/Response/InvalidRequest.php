@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Phagrancy\Http\Response\InvalidParameters
+ * Contains Phagrancy\Http\Response\InvalidRequest
  */
 
 namespace Phagrancy\Http\Response;

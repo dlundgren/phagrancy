@@ -7,9 +7,7 @@
 
 namespace Phagrancy\Http\Middleware;
 
-use Phagrancy\Http\Response\NotAuthorized;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 /**
  * Validates that the request is using the proper access_token
@@ -18,16 +16,9 @@ use Slim\Http\Response;
  */
 trait ValidatesToken
 {
-	/**
-	 * @var string|null The token used for validation
-	 */
-	private $token;
+	private ?string $token;
 
-	/**
-	 * @param Request $request
-	 * @return string The token if it exists
-	 */
-	private function getTokenFromRequest(Request $request)
+	private function getTokenFromRequest(Request $request): string
 	{
 		$token = $request->getQueryParam('access_token', '');
 		if (empty($token) && !empty($token = $request->getHeaderLine('Authorization'))) {
@@ -38,16 +29,8 @@ trait ValidatesToken
 		return $token;
 	}
 
-	/**
-	 * @param Request $request
-	 * @return bool True if the token is not set or the access_token query param matches
-	 */
-	private function validateToken(Request $request)
+	private function validateToken(Request $request): bool
 	{
-		if ($this->token === null) {
-			return true;
-		}
-
-		return $this->getTokenFromRequest($request) === $this->token;
+		return empty($this->token) || $this->getTokenFromRequest($request) === $this->token;
 	}
 }

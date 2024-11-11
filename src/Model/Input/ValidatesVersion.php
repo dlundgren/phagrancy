@@ -16,15 +16,9 @@ namespace Phagrancy\Model\Input;
  */
 trait ValidatesVersion
 {
-	/**
-	 * @var array List of rules for the scope
-	 */
-	private static $VERSION_RULE = ['required', 'trim', 'version'];
+	private static array $VERSION_RULE = ['required', 'trim', 'version'];
 
-	/**
-	 * Validates that the version is in SemVer like format.
-	 */
-	public function validateVersion()
+	public function validateVersion(): \Closure
 	{
 		$error = "Version must be of the format x.y.z where x, y, and z are all integers";
 		return function ($value) use ($error) {

@@ -7,9 +7,12 @@
 
 namespace Phagrancy\Action\Api\Scope\Box;
 
+use Phagrancy\Concern\FindsBox;
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Phagrancy\Service\Storage;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -19,49 +22,31 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SendFile
 {
-	/**
-	 * @var Repository\Box
-	 */
-	private $boxes;
+	use FindsBox;
 
-	/**
-	 * @var string
-	 */
-	private $uploadPath;
+	private Repository\Box $boxes;
 
-	/**
-	 * @var Input\BoxUpload
-	 */
-	private $input;
+	private Input\BoxUpload $input;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
+	private Storage $storage;
+
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, Storage $storage)
 	{
-		$this->boxes      = $boxes;
-		$this->input      = $input;
-		$this->uploadPath = $uploadPath;
+		$this->boxes   = $boxes;
+		$this->input   = $input;
+		$this->storage = $storage;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		/**
-		 * The route controls these params, and they are validated so safe
-		 *
-		 * @var string $name
-		 * @var string $scope
-		 * @var string $version
-		 * @var string $provider
-		 */
-		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		if (!$params) {
-			return new Response\NotFound();
+		$input = $this->input->validate($request->getAttribute('route')->getArguments());
+		if ($input->isValid()) {
+			$box     = $this->boxes->ofNameInScope($input->name, $input->scope);
+			$boxPath = $this->findBox($input, $this->storage);
 		}
 
-		extract($params);
-		$box  = $this->boxes->ofNameInScope($name, $scope);
-		$file = "{$this->uploadPath}/{$box->path()}/{$version}/{$provider}.box";
-
-		return ($box && file_exists($file))
-			? new Response\SendBoxFile($box, $version, $provider, $file)
+		return (isset($box) && isset($boxPath))
+			? new Response\SendBoxFile($box, $input->version, $input->provider, $boxPath)
 			: new Response\NotFound();
 	}
 }

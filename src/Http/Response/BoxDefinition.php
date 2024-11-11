@@ -23,9 +23,9 @@ class BoxDefinition
 	/**
 	 * @var string The key name for the definition. API uses tag, non-API uses name
 	 */
-	protected $nameKey = 'name';
+	protected string $nameKey = 'name';
 
-	protected function resolveUriPath(Entity\Box $box, $version, $provider)
+	protected function resolveUriPath(Entity\Box $box, string $version, string $provider): string
 	{
 		return "/{$box->path()}/{$version}/{$provider}";
 	}

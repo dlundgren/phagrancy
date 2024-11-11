@@ -45,15 +45,13 @@ class IndexTest
 	protected function runAction($scope)
 	{
 		$action = new Index(
-			new ScopeRepository($this->fs->url()),
+			new ScopeRepository($this->storage),
 			new ScopeInput()
 		);
 
 		$request = $this->buildRequest();
 		$request->getAttribute('route')->setArguments(['scope' => $scope]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

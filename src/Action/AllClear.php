@@ -8,6 +8,7 @@
 namespace Phagrancy\Action;
 
 use Phagrancy\Http\Response\AllClear as AllClearResponse;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Sends a generic 200 Response
@@ -16,7 +17,7 @@ use Phagrancy\Http\Response\AllClear as AllClearResponse;
  */
 class AllClear
 {
-	public function __invoke()
+	public function __invoke(): ResponseInterface
 	{
 		return new AllClearResponse;
 	}

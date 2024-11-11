@@ -8,6 +8,7 @@
 namespace Phagrancy\Http\Middleware;
 
 use Phagrancy\Http\Response\NotAuthorized;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -20,13 +21,13 @@ class ValidateTokenOrPassword
 {
 	use ValidatesToken, ValidatesPassword;
 
-	public function __construct($token, $password)
+	public function __construct(?string $token, ?string $password)
 	{
 		$this->token    = $token;
 		$this->password = $password;
 	}
 
-	public function __invoke(Request $request, Response $response, $next)
+	public function __invoke(Request $request, Response $response, $next): ResponseInterface
 	{
 		$notAuthorized = new NotAuthorized();
 		$allow = false;

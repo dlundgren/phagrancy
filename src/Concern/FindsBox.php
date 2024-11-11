@@ -1,29 +1,33 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Concern\FindsBox
+ */
+
 namespace Phagrancy\Concern;
+
+use Phagrancy\Http\Context\Vagrant;
+use Phagrancy\Service\Storage;
 
 trait FindsBox
 {
-	protected function findBox($params, string $storagePath): ?string
+	protected function findBox(Vagrant $params, Storage $storage): ?string
 	{
-		extract($params);
-
-		$box = $this->boxes->ofNameInScope($name, $scope);
-		if ($box) {
-			$architecture = $architecture ?? 'unknown';
-			$path = "{$storagePath}/{$box->path()}/{$version}/{$provider}-{$architecture}.box";
-			if (file_exists($path)) {
-				return $path;
+		if ($box = $this->boxes->ofNameInScope($params->name, $params->scope)) {
+			$architecture = $params->architecture ?? 'unknown';
+			if ($storage->exists($path = "{$box->path()}/{$params->version}/{$params->provider}-{$architecture}.box")) {
+				$file = $path;
 			}
-
-			if ($architecture === 'unknown') {
-				$path = "{$storagePath}/{$box->path()}/{$version}/{$provider}.box";
-				if (file_exists($path)) {
-					return $path;
+			elseif ($architecture === 'unknown') {
+				if ($storage->exists($path = "{$box->path()}/{$params->version}/{$params->provider}.box")) {
+					$file = $path;
 				}
 			}
 		}
 
-		return null;
+		return empty($file)
+			? null
+			: $storage->filePath($file);
 	}
 }

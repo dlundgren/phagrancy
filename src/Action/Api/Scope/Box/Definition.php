@@ -10,6 +10,7 @@ namespace Phagrancy\Action\Api\Scope\Box;
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -22,15 +23,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Definition
 {
-	/**
-	 * @var Repository\Box
-	 */
-	private $boxes;
+	private Repository\Box $boxes;
 
-	/**
-	 * @var Input\Box
-	 */
-	private $input;
+	private Input\Box $input;
 
 	public function __construct(Repository\Box $boxes, Input\Box $input)
 	{
@@ -38,15 +33,15 @@ class Definition
 		$this->input = $input;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		if (!$params) {
-			return new Response\NotFound();
+		$input = $this->input->validate($request->getAttribute('route')->getArguments());
+		if ($input->isValid()) {
+			$box = $this->boxes->ofNameInScope($input->name, $input->scope);
 		}
 
-		$box    = $this->boxes->ofNameInScope($params['name'], $params['scope']);
-
-		return new Response\Api\BoxDefinition($box, $request->getUri());
+		return isset($box)
+			? new Response\Api\BoxDefinition($box, $request->getUri())
+			: new Response\NotFound();
 	}
 }
