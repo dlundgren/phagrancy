@@ -9,6 +9,7 @@ namespace Phagrancy\Action;
 
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Repository;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Action for listing the boxes in a given scope
@@ -24,7 +25,7 @@ class Scopes
 		$this->repository = $repository;
 	}
 
-	public function __invoke()
+	public function __invoke(): ResponseInterface
 	{
 		return new Response\ScopeList($this->repository->all());
 	}

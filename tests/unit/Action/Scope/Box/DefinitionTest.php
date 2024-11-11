@@ -69,9 +69,6 @@ class DefinitionTest
 				]
 			]
 		);
-
-		// ensure the
-//		self::assertResponseJsonEqualsString($response, "versions.0.version", "1");
 	}
 
 	protected function runAction($scope, $name)
@@ -89,8 +86,6 @@ class DefinitionTest
 						'name'  => $name
 					]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

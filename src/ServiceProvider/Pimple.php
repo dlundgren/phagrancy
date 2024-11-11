@@ -26,17 +26,11 @@ use Pimple\ServiceProviderInterface;
 class Pimple
 	implements ServiceProviderInterface
 {
-	/**
-	 * @var array The environment variables
-	 */
-	private $env = [];
+	private array $env = [];
 
-	/**
-	 * @var string The root path to the project
-	 */
-	private $rootPath;
+	private string $rootPath;
 
-	public function __construct($rootPath)
+	public function __construct(string $rootPath)
 	{
 		$this->rootPath = $rootPath;
 	}
@@ -44,27 +38,24 @@ class Pimple
 	public function register(Container $di): void
 	{
 		$di['env']          = $this->env = $this->loadEnv();
-		$di['path.storage'] = $this->resolvePathFromEnv('storage_path', $this->rootPath);
 
 		// Authorization middleware
 		$di[Middleware\ValidateAccessToken::class] = function ($c) {
-			return new Middleware\ValidateAccessToken(isset($c['env']['api_token']) ? $c['env']['api_token'] : null);
+			return new Middleware\ValidateAccessToken($c['env']['api_token'] ?? null);
 		};
 
 		$di[Middleware\ValidateTokenOrPassword::class] = function ($c) {
 			return new Middleware\ValidateTokenOrPassword(
-				isset($c['env']['access_token']) ? $c['env']['access_token'] : null,
-				isset($c['env']['access_password']) ? $c['env']['access_password'] : null
+				$c['env']['access_token'] ?? null,
+				$c['env']['access_password'] ?? null
 			);
 		};
 
 		// storage
 		$di['storage.box'] = function () {
-			return new Storage(
-				new Filesystem(
-					new LocalFilesystemAdapter($this->resolvePathFromEnv('storage_path', $this->rootPath))
-				)
-			);
+			$path = $this->resolvePathFromEnv('storage_path', $this->rootPath);
+
+			return new Storage(new Filesystem(new LocalFilesystemAdapter($path)), $path);
 		};
 
 		// register repositories
@@ -90,7 +81,7 @@ class Pimple
 		};
 
 		$di[Action\Scope\Box\SendFile::class] = function ($c) {
-			return new Action\Scope\Box\SendFile($c[Repository\Box::class], new Input\BoxUpload(), $c['path.storage']);
+			return new Action\Scope\Box\SendFile($c[Repository\Box::class], new Input\BoxUpload(), $c['storage.box']);
 		};
 
 		// API action handlers
@@ -102,6 +93,10 @@ class Pimple
 			return new Action\Api\Scope\Box\Definition($c[Repository\Box::class], new Input\Box());
 		};
 
+		$di[Action\Api\Scope\Box\CreateProvider::class] = function () {
+			return new Action\Api\Scope\Box\CreateProvider(new Input\BoxProvider());
+		};
+
 		$di[Action\Api\Scope\Box\CreateVersion::class] = function () {
 			return new Action\Api\Scope\Box\CreateVersion(new Input\BoxVersion());
 		};
@@ -110,7 +105,7 @@ class Pimple
 			return new Action\Api\Scope\Box\Upload(
 				$c[Repository\Box::class],
 				new Input\BoxUpload(),
-				$c['path.storage']
+				$c['storage.box']
 			);
 		};
 
@@ -118,7 +113,7 @@ class Pimple
 			return new Action\Api\Scope\Box\UploadConfirm(
 				$c[Repository\Box::class],
 				new Input\BoxUpload(),
-				$c['path.storage']
+				$c['storage.box']
 			);
 		};
 
@@ -126,7 +121,7 @@ class Pimple
 			return new Action\Api\Scope\Box\UploadDirect(
 				$c[Repository\Box::class],
 				new Input\BoxUpload(),
-				$c['path.storage'],
+				$c['storage.box'],
 				$c['env']['api_token'] ?? null
 			);
 		};
@@ -135,7 +130,7 @@ class Pimple
 			return new Action\Api\Scope\Box\UploadPreFlight(
 				$c[Repository\Box::class],
 				new Input\BoxUpload(),
-				$c['path.storage']
+				$c['storage.box']
 			);
 		};
 
@@ -143,7 +138,7 @@ class Pimple
 			return new Action\Api\Scope\Box\Delete(
 				$c[Repository\Box::class],
 				new Input\BoxDelete(),
-				$c['path.storage']
+				$c['storage.box']
 			);
 		};
 
@@ -151,15 +146,12 @@ class Pimple
 			return new Action\Api\Scope\Box\SendFile(
 				$c[Repository\Box::class],
 				new Input\BoxUpload(),
-				$c['path.storage']
+				$c['storage.box']
 			);
 		};
 	}
 
-	/**
-	 * @return mixed
-	 */
-	private function loadEnv()
+	private function loadEnv(): array
 	{
 		$envFile = "{$this->rootPath}/.env";
 		if (file_exists($envFile)) {

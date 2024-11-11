@@ -43,7 +43,7 @@ class SendFileTest
 		$action = new SendFile(
 			new BoxRepository($this->storage),
 			new BoxUpload(),
-			$this->fs->url()
+			$this->storage
 		);
 
 		$request = $this->buildRequest();
@@ -56,8 +56,6 @@ class SendFileTest
 						'provider' => $provider
 					]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

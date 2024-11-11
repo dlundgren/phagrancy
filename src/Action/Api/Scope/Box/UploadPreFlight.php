@@ -24,11 +24,10 @@ class UploadPreFlight
 
 	protected function perform(ServerRequestInterface $request, Box $box, $params): ResponseInterface
 	{
-		$path = $this->createUrlFromRouteParams($this->params);
-		$json = [
-			'upload_path' => (string)$request->getUri()->withPath("{$path}/upload")
-		];
-
-		return new Response\Json($json);
+		return new Response\Json(
+			[
+				'upload_path' => (string)$request->getUri()->withPath("{$this->params->apiPath()}/upload")
+			]
+		);
 	}
 }

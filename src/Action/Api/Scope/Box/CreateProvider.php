@@ -8,6 +8,8 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
+use Phagrancy\Model\Input\BoxProvider;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -17,26 +19,24 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CreateProvider
 {
-	use ReturnsUrlForBox;
+	private BoxProvider $input;
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __construct(BoxProvider $input)
 	{
-		$uri  = $request->getUri();
-		$data = $request->getParsedBody();
-		if (empty($data)) {
-			return new Response\InvalidRequest(['provider' => 'Provider is required']);
-		}
+		$this->input = $input;
+	}
 
-		$json = $data['provider'];
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
+	{
+		$input = $this->input->validateFromRequest($request);
 
-		// @TODO pass this through the validator
-		$params             = $request->getAttribute('route')->getArguments();
-		$params['provider'] = $json['name'];
-		$path               = $this->createUrlFromRouteParams($params);
-
-		// specify the upload url path;
-		$json['upload_url'] = (string)$uri->withPath("{$path}/upload");
-
-		return new Response\Json($json);
+		return $input->isValid()
+			? new Response\Json(
+				[
+					'name'       => $input->provider,
+					'upload_url' => (string)$request->getUri()->withPath("{$input->apiPath()}/upload")
+				]
+			)
+			: new Response\InvalidRequest($input->errors);
 	}
 }

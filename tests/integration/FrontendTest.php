@@ -76,13 +76,6 @@ class FrontendTest
 	{
 		$response = $this->runApp($method, $path);
 
-		if ($path === '/sacopes') {
-			$b = $response->getBody();
-			$b->rewind();
-
-			var_dump($b->getContents());
-			die();
-		}
 		self::assertInstanceOf($responseClass, $response);
 		self::assertResponseHasStatus($response, 200);
 		self::assertMessageBodyEqualsJsonArray($response, $expected);

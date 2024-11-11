@@ -85,11 +85,10 @@ abstract class Integration
 	protected function setUp(): void
 	{
 		$this->fs = vfsStream::setup('integration', null, $this->spec);
-		$this->storage = new Storage(
-			new Filesystem(
-				new LocalFilesystemAdapter($this->fs->url() . "/data/storage")
-			)
-		);
+		$path = $this->fs->url() . "/data/storage";
+		// we need to remove the locking as it's not supported on vfsStream special fs
+		$lfa = new LocalFilesystemAdapter($path, null, 0);
+		$this->storage = new Storage(new Filesystem($lfa), $path);
 	}
 
 	/**

@@ -52,8 +52,6 @@ class IndexTest
 		$request = $this->buildRequest();
 		$request->getAttribute('route')->setArguments(['scope' => $scope]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

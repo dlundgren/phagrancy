@@ -33,7 +33,7 @@ class DeleteTest
 		$action = new Delete(
 			new Box($this->storage),
 			new BoxDelete(),
-			$this->fs->url()
+			$this->storage
 		);
 
 		self::assertInstanceOf(NotFound::class, $action($request));
@@ -60,7 +60,7 @@ class DeleteTest
 		$action = new Delete(
 			new Box($this->storage),
 			new BoxDelete(),
-			$this->fs->url()
+			$this->storage
 		);
 
 		$response = $action($request);
@@ -88,16 +88,16 @@ class DeleteTest
 		$action = new Delete(
 			new Box($this->storage),
 			new BoxDelete(),
-			$this->fs->url()
+			$this->storage
 		);
 
 		// box file exists before action
-		self::assertTrue(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
+		self::assertTrue($this->storage->exists('test/delete/1.0.0/test.box'));
 
 		$response = $action($request);
 
 		// file was removed
-		self::assertFalse(file_exists($this->fs->url() . '/test/delete/1.0.0/test.box'));
+		self::assertFalse($this->storage->exists('test/delete/1.0.0/test.box'));
 		self::assertInstanceOf(Json::class, $response);
 		self::assertResponseHasStatus($response, 200);
 

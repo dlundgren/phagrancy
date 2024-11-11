@@ -9,6 +9,7 @@ namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Input\BoxVersion;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -20,30 +21,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CreateVersion
 {
-	/**
-	 * @var BoxVersion
-	 */
-	private $input;
+	private BoxVersion $input;
 
 	public function __construct(BoxVersion $input)
 	{
 		$this->input = $input;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		$data = $request->getParsedBody();
-		if (empty($data)) {
-			return new Response\InvalidRequest(['version' => 'Version is required']);
-		}
+		$input = $this->input->validateFromRequest($request);
 
-		// merge the data in
-		$args   = $request->getAttribute('route')->getArguments();
-		$params = $this->input->validate(array_merge($data['version'], $args));
-		if (!$params) {
-			return new Response\InvalidRequest($this->input->errors());
-		}
-
-		return new Response\Json($data['version']);
+		return $input->isValid()
+			? new Response\Json($input->body['version'])
+			: new Response\InvalidRequest($input->errors);
 	}
 }

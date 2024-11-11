@@ -46,8 +46,6 @@ class DefinitionTest
 						'name'  => $name
 					]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

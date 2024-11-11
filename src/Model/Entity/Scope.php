@@ -14,34 +14,22 @@ namespace Phagrancy\Model\Entity;
  */
 class Scope
 {
-	/**
-	 * @var string The name of the scope
-	 */
-	private $name;
+	private string $name;
 
-	/**
-	 * @var array List of boxes that belong to this scope
-	 */
-	private $boxes = [];
+	private array $boxes;
 
-	public function __construct($name, $boxes)
+	public function __construct(string $name, array $boxes = [])
 	{
 		$this->name  = $name;
 		$this->boxes = $boxes;
 	}
 
-	/**
-	 * @return string The scope name
-	 */
-	public function name()
+	public function name(): string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return array The scopes boxes
-	 */
-	public function boxes()
+	public function boxes(): array
 	{
 		return $this->boxes;
 	}

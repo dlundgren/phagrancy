@@ -55,18 +55,22 @@ abstract class Scope
 		]
 	];
 
-	protected Storage $storage;
 	protected vfsStreamDirectory $fs;
+
+	protected Storage $storage;
 
 	protected function setUp(): void
 	{
 		IdentityMap::clear();
 		$this->fs = vfsStream::setup('scope', null, $this->scope);
 
-		$this->storage = new Storage(
-			new Filesystem(
-				new LocalFilesystemAdapter($this->fs->url())
-			)
-		);
+		$path = $this->fs->url();
+		$this->storage = new Storage(new Filesystem(
+			new LocalFilesystemAdapter(
+				$path,
+				null,
+				// Remove write lock since it's not supported on vfsStream
+				0
+			)), $path);
 	}
 }

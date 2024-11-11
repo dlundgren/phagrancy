@@ -35,7 +35,7 @@ class UploadPreFlightTest
 		$action = new UploadPreFlight(
 			new Box($this->storage),
 			new BoxUpload(),
-			$this->fs->url()
+			$this->storage
 		);
 
 		$request = $this->buildRequest();
@@ -48,8 +48,6 @@ class UploadPreFlightTest
 						'provider' => $provider
 					]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

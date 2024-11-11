@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Phagrancy\Action\Api\Scope\Box\UploadPreFlight
+ * Contains Phagrancy\Action\Api\Scope\Box\UploadDirect
  */
 
 namespace Phagrancy\Action\Api\Scope\Box;
@@ -11,6 +11,7 @@ use Phagrancy\Http\Response;
 use Phagrancy\Model\Entity\Box;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Phagrancy\Service\Storage;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,30 +23,25 @@ use Psr\Http\Message\ServerRequestInterface;
 class UploadDirect
 	extends UploadAction
 {
-	use ReturnsUrlForBox;
+	protected ?string $token;
 
-	/**
-	 * @var string Token used for signing the URL
-	 */
-	protected $token;
-
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath, $token)
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, Storage $storage, ?string $token)
 	{
-		parent::__construct($boxes, $input, $uploadPath);
+		parent::__construct($boxes, $input, $storage);
 		$this->token = $token;
 	}
 
 	protected function perform(ServerRequestInterface $request, Box $box, $params): ResponseInterface
 	{
-		extract($params);
+		$path       = $this->params->apiPath();
+		$signed     = hash_hmac('sha256', "PUT\n{$path}/upload", $this->token);
+		$upload_url = $request->getUri()->withPath("{$path}/upload")->withQuery("X-Phagrancy-Signature={$signed}");
 
-		$path   = $this->createUrlFromRouteParams($request->getAttribute('route')->getArguments());
-		$signed = hash_hmac('sha256', "PUT\n$path/upload", $this->token);
-		$json   = [
-			'upload_path' => $request->getUri()->withPath("{$path}/upload") . "?X-Phagrancy-Signature={$signed}",
-			'callback' => (string)$request->getUri()->withPath("{$path}/upload/confirm")
-		];
-
-		return new Response\Json($json);
+		return new Response\Json(
+			[
+				'upload_path' => (string)$upload_url,
+				'callback'    => (string)$request->getUri()->withPath("{$path}/upload/confirm")
+			]
+		);
 	}
 }

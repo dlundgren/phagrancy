@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains Phagrancy\Service\Storage
+ */
+
 namespace Phagrancy\Service;
 
 use League\Flysystem\DirectoryAttributes;
@@ -12,22 +17,49 @@ class Storage
 {
 	protected Filesystem $fs;
 
-	public function __construct(Filesystem $fs)
+	protected string $path;
+
+	public function __construct(Filesystem $fs, string $path)
 	{
 		$this->fs = $fs;
+		$this->path = $path;
+	}
+
+	public function all(string $path = '.'): array
+	{
+		$results = [];
+		foreach ($this->fs->listContents($path)->sortByPath() as $entry) {
+			$results[] = basename($entry->path());
+		}
+
+		return $results;
+	}
+
+	public function delete(string $path): bool
+	{
+		$working = str_starts_with($path, $this->path)
+			? str_replace($this->path, '', $path)
+			: $path;
+
+		if ($this->exists($working) && is_writable($path)) {
+			$this->fs->delete($working);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function directories(string $path = '.'): array
 	{
 		$results = [];
-		foreach ($this->fs->listContents($path) as $entry) {
+		foreach ($this->fs->listContents($path)->sortByPath() as $entry) {
 			if ($entry instanceof DirectoryAttributes) {
 				$results[] = basename($entry->path());
 			}
 		}
-		asort($results);
 
-		return array_values($results);
+		return $results;
 	}
 
 	public function exists(string $path): bool
@@ -36,7 +68,7 @@ class Storage
 			return true;
 		}
 
-		// Older flysystem (PHP < 7.4) doesn't have directoryExists
+		// flysystem < 3.x doesn't have directoryExists
 		try {
 			$this->fs->visibility($path);
 		}
@@ -47,58 +79,49 @@ class Storage
 		return true;
 	}
 
+	public function filePath(string $file): ?string
+	{
+		return $this->exists($file)
+			? "{$this->path}/{$file}"
+			: null;
+	}
+
 	public function files(string $path = '.'): array
 	{
 		$results = [];
-		foreach ($this->fs->listContents($path) as $entry) {
+		foreach ($this->fs->listContents($path)->sortByPath() as $entry) {
 			if ($entry instanceof FileAttributes) {
 				$results[] = basename($entry->path());
 			}
 		}
-		asort($results);
 
-		return array_values($results);
+		return $results;
 	}
 
-
-	public function saveFromRequest(ServerRequestInterface $request, string $path)
+	public function isAvailable(): bool
 	{
-		// get it downloaded
-		$tmpFile = $this->createTemporaryFile();
+		return is_writable($this->path) || is_writable(dirname($this->path));
+	}
+
+	public function write(string $path, $content): bool
+	{
+		$this->fs->write($path, $content);
+
+		return true;
+	}
+
+	public function saveFromRequest(ServerRequestInterface $request, string $path): bool
+	{
 		$request->getBody()->detach();
-		$this->fs->writeStream($tmpFile, $stdin = fopen('php://input', 'r'));
-		fclose($stdin);
+		$stdin = fopen('php://input', 'r');
 
-		$this->fs->move($tmpFile, $path);
-
-	}
-
-	public function save($stream, $to) {}
-
-	private function createTemporaryFile()
-	{
-		return tempnam("/tmp", 'phagrancy');
-	}
-
-	public function hasScope(string $scope): bool
-	{
 		try {
-			$this->fs->visibility($scope);
-			return true;
+			$this->fs->writeStream($path, $stdin);
 		}
-		catch (FilesystemException $e) {
-			return false;
+		finally {
+			fclose($stdin);
 		}
-	}
 
-	public function hasBox(string $scope, string $box): bool
-	{
-		try {
-			$this->fs->visibility("{$scope}/{$box}");
-			return true;
-		}
-		catch (FilesystemException $e) {
-			return false;
-		}
+		return true;
 	}
 }

@@ -49,8 +49,6 @@ class CreateVersionTest
 
 		$request = $request->withParsedBody(['version' => ['version' => $version, 'description' => 'description']]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

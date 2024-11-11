@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Phagrancy\Model\Input\BoxVersion
+ * Contains Phagrancy\Model\Input\BoxProvider
  */
 
 namespace Phagrancy\Model\Input;
@@ -18,7 +18,8 @@ use Validator\LIVR;
  *
  * @package Phagrancy\Model\Input
  */
-class BoxVersion
+class BoxProvider
+	extends BoxVersion
 {
 	use IsValidator, ValidatesScope, ValidatesBoxName, ValidatesVersion;
 
@@ -28,13 +29,14 @@ class BoxVersion
 			[
 				'scope'    => [$this, 'validateScope'],
 				'name'     => [$this, 'validateBoxName'],
-				'version'  => [$this, 'validateVersion'],
+				'version'  => [$this, 'validateVersion']
 			]
 		);
 		$this->validation = [
 			'scope'    => self::$SCOPE_RULE,
 			'name'     => self::$BOX_NAME_RULE,
 			'version'  => self::$VERSION_RULE,
+			'provider' => ['required', 'trim', 'to_lc']
 		];
 	}
 
@@ -42,19 +44,16 @@ class BoxVersion
 	{
 		$data = $request->getParsedBody();
 		if (empty($data)) {
-			return Vagrant::createFromInput([], ['version' => 'Version is required']);
+			return Vagrant::createFromInput([], ['provider' => 'Provider is required']);
 		}
 
 		$input =  $this->perform(
 			array_merge(
-				$data['version'],
+				['provider' => $data['provider']['name'] ?? null],
 				$request->getAttribute('route')->getArguments()
 			),
 			$this->validation
 		);
-
-		# the response is the $data['version']
-		$input->body = $data;
 
 		return $input;
 	}
