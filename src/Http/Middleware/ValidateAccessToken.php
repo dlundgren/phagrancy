@@ -8,6 +8,7 @@
 namespace Phagrancy\Http\Middleware;
 
 use Phagrancy\Http\Response\NotAuthorized;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -22,12 +23,12 @@ class ValidateAccessToken
 		ValidatesToken::validateToken as private _validateToken;
 	}
 
-	public function __construct($token)
+	public function __construct(?string $token)
 	{
 		$this->token = $token;
 	}
 
-	public function __invoke(Request $request, Response $response, $next)
+	public function __invoke(Request $request, Response $response, $next): ResponseInterface
 	{
 		return $this->validateToken($request)
 			? $next($request, $response)

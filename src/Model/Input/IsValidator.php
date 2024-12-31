@@ -7,6 +7,8 @@
 
 namespace Phagrancy\Model\Input;
 
+use Phagrancy\Http\Context\Vagrant;
+use Psr\Http\Message\ServerRequestInterface;
 use Validator\LIVR;
 
 /**
@@ -16,34 +18,38 @@ use Validator\LIVR;
  */
 trait IsValidator
 {
-	/**
-	 * @var array list of errors
-	 */
-	protected $errors;
+	protected array $errors;
 
-	/**
-	 * @return array The list of errors
-	 */
-	public function errors()
+	protected array $validation = [];
+
+	public function errors(): array
 	{
 		return $this->errors;
 	}
 
-	/**
-	 * Performs the LIVR validation
-	 *
-	 * @param array $data
-	 * @param array $rules
-	 * @return mixed
-	 */
-	private function perform($data = [], $rules = [])
+	public function validateFromRequest(ServerRequestInterface $request): Vagrant
+	{
+		return $this->perform(
+			array_merge(
+				$request->getParsedBody() ?? [],
+				$request->getAttribute('route')->getArguments()
+			),
+			$this->validation
+		);
+	}
+
+	private function perform(array $data = [], array $rules = []): Vagrant
 	{
 		$validator = new LIVR($rules);
-		$valid     = $validator->validate($data);
-		if (!$valid) {
-			$this->errors = $validator->getErrors();
-		}
 
-		return $valid;
+		return Vagrant::createFromInput(
+			$validator->validate($data),
+			$validator->getErrors()
+		);
+	}
+
+	public function validate($params): Vagrant
+	{
+		return $this->perform($params, $this->validation);
 	}
 }

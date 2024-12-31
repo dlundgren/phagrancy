@@ -8,6 +8,7 @@
 namespace Phagrancy\Action\Api\Scope\Box;
 
 use Phagrancy\Http\Response\Json;
+use Phagrancy\Model\Input\BoxProvider;
 use Phagrancy\TestCase\Scope as ScopeTestCase;
 
 class CreateProviderTest
@@ -30,7 +31,9 @@ class CreateProviderTest
 
 	protected function runAction($scope, $name, $version, $provider)
 	{
-		$action = new CreateProvider();
+		$action = new CreateProvider(
+			new BoxProvider()
+		);
 
 		$request = $this->buildRequest();
 		$request->getAttribute('route')
@@ -44,8 +47,6 @@ class CreateProviderTest
 
 		$request = $request->withParsedBody(['provider' => ['name' => $provider]]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

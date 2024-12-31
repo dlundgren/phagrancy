@@ -44,4 +44,11 @@ class BoxUpload
 				'architecture' => ['trim', 'to_lc']
 			]);
 	}
+
+	public function validateArchitecture()
+	{
+		return function ($value) {
+			// nothing to return as we accept it all
+		};
+	}
 }

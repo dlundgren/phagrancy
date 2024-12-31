@@ -14,17 +14,9 @@ namespace Phagrancy\Model\Input;
  */
 trait ValidatesBoxName
 {
-	/**
-	 * @var array Generic list of rules
-	 */
-	private static $BOX_NAME_RULE = ['required', 'trim', 'to_lc', 'name'];
+	private static array $BOX_NAME_RULE = ['required', 'trim', 'to_lc', 'name'];
 
-	/**
-	 * Validates the box name
-	 *
-	 * @return \Closure
-	 */
-	public function validateBoxName()
+	public function validateBoxName(): \Closure
 	{
 		return function ($value) {
 			if (!preg_match('/^[a-z0-9-]+$/i', $value)) {

@@ -69,15 +69,12 @@ class DefinitionTest
 				]
 			]
 		);
-
-		// ensure the
-//		self::assertResponseJsonEqualsString($response, "versions.0.version", "1");
 	}
 
 	protected function runAction($scope, $name)
 	{
 		$action = new Definition(
-			new BoxRepository($this->fs->url()),
+			new BoxRepository($this->storage),
 			new BoxInput()
 		);
 
@@ -89,8 +86,6 @@ class DefinitionTest
 						'name'  => $name
 					]);
 
-		$response = $action($request);
-
-		return $response;
+		return $action($request);
 	}
 }

@@ -18,7 +18,7 @@ class ScopesTest
 
 	public function testReturnsOkResponse()
 	{
-		$r = (new Scopes(new Scope($this->fs->url())))();
+		$r = (new Scopes(new Scope($this->storage)))();
 
 		self::assertResponseHasStatus($r, 200);
 		self::assertMessageBodyEqualsJsonArray(

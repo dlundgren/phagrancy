@@ -8,6 +8,7 @@
 namespace Phagrancy\Model\Repository;
 
 use Phagrancy\Model\Entity;
+use Phagrancy\Service\Storage;
 
 /**
  * Repository for the boxes
@@ -16,70 +17,36 @@ use Phagrancy\Model\Entity;
  */
 class Box
 {
-	/**
-	 * @var string Path to the boxes
-	 */
-	private $path;
+	private Storage $storage;
 
-	public function __construct($path)
+	public function __construct(Storage $storage)
 	{
-		$this->path = $path;
+		$this->storage = $storage;
 	}
 
-	/**
-	 * @param $name
-	 * @param $scope
-	 * @return mixed|null|Entity\Box The Box
-	 */
-	public function ofNameInScope($name, $scope)
+	public function ofNameInScope(string $name, string $scope): ?Entity\Box
 	{
 		$key = "{$scope}.{$name}";
 		$box = IdentityMap::get(Entity\Box::class, $key);
 		if (!$box) {
-			$dir      = "{$this->path}/{$scope}/{$name}";
-			$versions = file_exists($dir) ? $this->loadVersions($dir) : [];
+			$path = "{$scope}/{$name}";
+			$versions = [];
+			foreach($this->storage->directories($path) as $version) {
+				$providers = [];
+				foreach($this->storage->files("{$path}/{$version}") as $provider) {
+					if (str_ends_with($provider, '.box')) {
+						$providers[] = explode('-', basename($provider, '.box'));
+					}
+				}
+				if (!empty($providers)) {
+					$versions[$version] = $providers;
+				}
+			}
+
 			$box      = new Entity\Box($name, $scope, $versions);
 			IdentityMap::set($box, $key);
 		}
 
 		return $box;
-	}
-
-	/**
-	 * Loads the versions from the box directory
-	 *
-	 * @param string $dir
-	 * @return array List of versions
-	 */
-	private function loadVersions($dir)
-	{
-		$versions = [];
-		foreach (new \FilesystemIterator($dir) as $path => $file) {
-			/** @var $file \SplFileInfo */
-			if ($file->isDir()) {
-				$versions[$file->getBasename()] = $this->loadProviders($file->getPathname());
-			}
-		}
-
-		return $versions;
-	}
-
-	/**
-	 * Returns a list of providers from the version directory
-	 *
-	 * @param string $dir
-	 * @return array List of providers
-	 */
-	private function loadProviders($dir)
-	{
-		$providers = [];
-		foreach (new \FilesystemIterator($dir) as $path => $file) {
-			/** @var $file \SplFileInfo */
-			if ($file->getExtension() === 'box') {
-				$providers[] = explode('-', $file->getBasename('.box'));
-			}
-		}
-
-		return $providers;
 	}
 }

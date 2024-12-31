@@ -7,9 +7,12 @@
 
 namespace Phagrancy\TestCase;
 
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Phagrancy\Model\Repository\IdentityMap;
+use Phagrancy\Service\Storage;
 
 abstract class Scope
 	extends Action
@@ -54,9 +57,20 @@ abstract class Scope
 
 	protected vfsStreamDirectory $fs;
 
+	protected Storage $storage;
+
 	protected function setUp(): void
 	{
 		IdentityMap::clear();
 		$this->fs = vfsStream::setup('scope', null, $this->scope);
+
+		$path = $this->fs->url();
+		$this->storage = new Storage(new Filesystem(
+			new LocalFilesystemAdapter(
+				$path,
+				null,
+				// Remove write lock since it's not supported on vfsStream
+				0
+			)), $path);
 	}
 }

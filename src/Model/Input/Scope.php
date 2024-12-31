@@ -7,7 +7,7 @@
 
 namespace Phagrancy\Model\Input;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Phagrancy\Http\Context\Vagrant;
 use Validator\LIVR;
 
 /**
@@ -25,14 +25,14 @@ class Scope
 			[
 				'scope' => [$this, 'validateScope'],
 			]);
+
+		$this->validation = [
+			'scope' => static::$SCOPE_RULE
+		];
 	}
 
-	public function validate($params)
+	public function validate($params): Vagrant
 	{
-		return $this->perform(
-			$params,
-			[
-				'scope' => self::$SCOPE_RULE
-			]);
+		return $this->perform($params, $this->validation);
 	}
 }

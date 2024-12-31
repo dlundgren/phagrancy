@@ -14,17 +14,14 @@ namespace Phagrancy\Model\Input;
  */
 trait ValidatesScope
 {
-	/**
-	 * @var array List of rules for the scope
-	 */
-	private static $SCOPE_RULE = ['required', 'trim', 'to_lc', 'scope'];
+	private static array $SCOPE_RULE = ['required', 'trim', 'to_lc', 'scope'];
 
 	/**
 	 * What constitutes a valid username?
 	 * - at least 3 chars
 	 * - letters, numbers, dashes (& underscores?)
 	 */
-	public  function validateScope()
+	public function validateScope(): \Closure
 	{
 		return function($value) {
 			if (mb_strlen($value) < 3) {

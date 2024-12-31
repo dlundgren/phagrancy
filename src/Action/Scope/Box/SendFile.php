@@ -7,12 +7,13 @@
 
 namespace Phagrancy\Action\Scope\Box;
 
+use Phagrancy\Concern\FindsBox;
 use Phagrancy\Http\Response;
 use Phagrancy\Model\Input;
 use Phagrancy\Model\Repository;
+use Phagrancy\Service\Storage;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Headers;
-use Slim\Http\Stream;
 
 /**
  * Action for sending a file to the requester
@@ -21,49 +22,32 @@ use Slim\Http\Stream;
  */
 class SendFile
 {
-	/**
-	 * @var Repository\Box
-	 */
-	private $boxes;
+	use FindsBox;
 
-	/**
-	 * @var string
-	 */
-	private $uploadPath;
+	private Repository\Box $boxes;
 
-	/**
-	 * @var Input\BoxUpload
-	 */
-	private $input;
+	private Storage $storage;
 
-	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, $uploadPath)
+	private Input\BoxUpload $input;
+
+	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, Storage $storage)
 	{
-		$this->boxes      = $boxes;
-		$this->input      = $input;
-		$this->uploadPath = $uploadPath;
+		$this->boxes   = $boxes;
+		$this->input   = $input;
+		$this->storage = $storage;
 	}
 
-	public function __invoke(ServerRequestInterface $request)
+	public function __invoke(ServerRequestInterface $request): ResponseInterface
 	{
-		/**
-		 * The route controls these params, and they are validated so safe
-		 *
-		 * @var string $name
-		 * @var string $scope
-		 * @var string $version
-		 * @var string $provider
-		 */
-		$params = $this->input->validate($request->getAttribute('route')->getArguments());
-		if (!$params) {
-			return new Response\NotFound();
+		$vagrant = $this->input->validate($request->getAttribute('route')->getArguments());
+		if ($vagrant->isValid()) {
+			$box     = $this->boxes->ofNameInScope($vagrant->name, $vagrant->scope);
+			$boxPath = $this->findBox($vagrant, $this->storage);
+			if (!empty($box) && !empty($boxPath)) {
+				return new Response\SendBoxFile($box, $vagrant->version, $vagrant->provider, $boxPath);
+			}
 		}
 
-		extract($params);
-		$box  = $this->boxes->ofNameInScope($name, $scope);
-		$file = "{$this->uploadPath}/{$box->path()}/{$version}/{$provider}.box";
-
-		return ($box && file_exists($file))
-			? new Response\SendBoxFile($box, $version, $provider, $file)
-			: new Response\NotFound();
+		return new Response\NotFound();
 	}
 }
