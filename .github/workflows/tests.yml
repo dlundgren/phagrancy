@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Restart app container
         uses: docker://docker
@@ -39,7 +39,7 @@ jobs:
           args: docker restart phagrancy-app
 
       - name: Packer Setup
-        uses: hashicorp/setup-packer@main
+        uses: hashicorp/setup-packer@v3
         with:
           version: "latest"
 
@@ -50,9 +50,16 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies with Composer
-        uses: ramsey/composer-install@v1
+        uses: ramsey/composer-install@v4
 
       - name: Tests
         run: |
           packer plugins install github.com/hashicorp/vagrant
           composer ci-test
+
+      - name: Code quality
+        uses: qltysh/qlty-action/coverage@v2
+        if: matrix.analysis
+        with:
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          files: build/logs/clover.xml
