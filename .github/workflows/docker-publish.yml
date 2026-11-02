@@ -54,9 +54,7 @@ jobs:
           file: docker/Dockerfile
           build-args: |
             APP_VERSION=${{ github.ref_name }}
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
