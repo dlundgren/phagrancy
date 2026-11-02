@@ -7,6 +7,7 @@
 
 namespace Phagrancy\Model\Input;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ValidatesVersionTest
@@ -21,7 +22,7 @@ class ValidatesVersionTest
 		};
 	}
 
-	public function provideGoodVersions()
+	public static function provideGoodVersions()
 	{
 		return [
 			['1'],
@@ -36,7 +37,7 @@ class ValidatesVersionTest
 		];
 	}
 
-	public function provideBadVersions()
+	public static function provideBadVersions()
 	{
 		return [
 			['1.-1'],
@@ -52,6 +53,7 @@ class ValidatesVersionTest
 	/**
 	 * @dataProvider provideGoodVersions
 	 */
+	#[DataProvider('provideGoodVersions')]
 	public function testOkVersions($version)
 	{
 		self::assertEmpty($this->validator->validateVersion()($version));
@@ -60,6 +62,7 @@ class ValidatesVersionTest
 	/**
 	 * @dataProvider provideBadVersions
 	 */
+	#[DataProvider('provideBadVersions')]
 	public function testBadVersions($version)
 	{
 		self::assertNotEmpty($this->validator->validateVersion()($version));

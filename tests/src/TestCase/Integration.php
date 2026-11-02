@@ -29,6 +29,8 @@ abstract class Integration
 {
 	use Psr7Assertions;
 
+	protected array $env = [];
+
 	protected $spec = [
 		'.env' => 'storage_path=data/storage',
 		'data' => [

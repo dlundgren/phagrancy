@@ -23,12 +23,12 @@ use Psr\Http\Message\ServerRequestInterface;
 class UploadDirect
 	extends UploadAction
 {
-	protected ?string $token;
+	protected string $token = '';
 
 	public function __construct(Repository\Box $boxes, Input\BoxUpload $input, Storage $storage, ?string $token)
 	{
 		parent::__construct($boxes, $input, $storage);
-		$this->token = $token;
+		$this->token = $token ?? '';
 	}
 
 	protected function perform(ServerRequestInterface $request, Box $box, $params): ResponseInterface

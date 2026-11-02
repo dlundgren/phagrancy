@@ -23,7 +23,7 @@ class ValidateTokenOrPassword
 
 	public function __construct(?string $token, ?string $password)
 	{
-		$this->token    = $token;
+		$this->token    = $token ?? '';
 		$this->password = $password;
 	}
 

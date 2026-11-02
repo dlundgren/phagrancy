@@ -20,19 +20,19 @@
     }
   },
   "require": {
-    "php": ">=7.4",
+    "php": "^8.0",
     "josegonzalez/dotenv": "~4.0",
     "slim/slim": "~3.0",
     "validator/livr": "dev-master",
-    "league/flysystem": "^2.5"
+    "league/flysystem": "^3.36"
   },
   "require-dev": {
-    "phpunit/phpunit": "~9.6",
+    "phpunit/phpunit": "^9.6 || ^10 || ^11",
     "mikey179/vfsstream": "~1.6",
     "helmich/phpunit-psr7-assert": "~4.1",
-    "syberisle/mock-php-stream": "~1.1",
-    "phpstan/phpstan": "^1.12",
-    "symfony/process": "^5.4"
+    "syberisle/mock-php-stream": "~2.0",
+    "phpstan/phpstan": "^2.2",
+    "symfony/process": "^6.0"
   },
   "scripts" : {
     "test-packer": [
