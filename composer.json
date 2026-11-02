@@ -40,7 +40,7 @@
       "vendor/bin/phpunit --testsuite Packer"
     ],
     "test": "vendor/bin/phpunit --testsuite Phagrancy",
-    "ci-test": "vendor/bin/phpunit --testsuite Phagrancy,Packer --coverage-clover build/logs/clover.xml",
+    "ci-test": "vendor/bin/phpunit --testsuite Phagrancy,Packer",
     "stan": "vendor/bin/phpstan analyze src",
     "test-coverage": "vendor/bin/phpunit --testsuite Phagrancy --coverage-clover build/logs/clover.xml",
     "test-html": "vendor/bin/phpunit --testsuite Phagrancy --coverage-html build/html"

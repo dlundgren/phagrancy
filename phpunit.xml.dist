@@ -6,14 +6,14 @@
          bootstrap="tests/bootstrap.php"
          failOnRisky="true"
          failOnWarning="true">
-  <coverage>
+  <source>
     <include>
       <directory>./src/</directory>
     </include>
-  </coverage>
-    <php>
-        <ini name="error_reporting" value="8191"/>
-    </php>
+  </source>
+  <php>
+    <ini name="error_reporting" value="8191"/>
+  </php>
   <testsuites>
     <testsuite name="Phagrancy">
       <directory>./tests/</directory>

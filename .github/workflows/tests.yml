@@ -57,6 +57,10 @@ jobs:
           packer plugins install github.com/hashicorp/vagrant
           composer ci-test
 
+      - name: Generate Code Coverage
+        if: matrix.analysis
+        run: composer test-coverage
+
       - name: Code quality
         uses: qltysh/qlty-action/coverage@v2
         if: matrix.analysis
