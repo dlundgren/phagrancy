@@ -58,7 +58,7 @@ jobs:
           composer ci-test
 
       - name: Code Climate Coverage Action Test
-        uses: MartinNuc/codeclimate-action@1
+        uses: paambaati/codeclimate-action@v2.5.7
         if: matrix.analysis
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TEST_REPORTER_ID }}
