@@ -10,6 +10,7 @@ namespace Phagrancy\Http\Middleware;
 use Phagrancy\Http\Response\Json;
 use Phagrancy\Http\Response\NotAuthorized;
 use Phagrancy\TestCase\Action;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -21,7 +22,7 @@ class ValidateTokenOrPasswordTest
 	protected $password = 'test';
 	protected $token    = 'coffee';
 
-	public function provideClassSetup()
+	public static function provideClassSetup()
 	{
 		return [
 			[false, true],
@@ -33,6 +34,7 @@ class ValidateTokenOrPasswordTest
 	/**
 	 * @dataProvider provideClassSetup
 	 */
+	#[DataProvider('provideClassSetup')]
 	public function testReturnsNext($useToken, $usePassword)
 	{
 		$response = $this->runAction(
@@ -50,6 +52,7 @@ class ValidateTokenOrPasswordTest
 	/**
 	 * @dataProvider provideClassSetup
 	 */
+	#[DataProvider('provideClassSetup')]
 	public function testReturnsNotAuthorized($useToken, $usePassword)
 	{
 		$response = $this->runAction(

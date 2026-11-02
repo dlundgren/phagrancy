@@ -16,7 +16,7 @@ use Slim\Http\Request;
  */
 trait ValidatesToken
 {
-	private ?string $token;
+	private string $token = '';
 
 	private function getTokenFromRequest(Request $request): string
 	{

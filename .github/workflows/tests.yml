@@ -15,22 +15,19 @@ jobs:
           - "8080:8080"
         volumes:
           - "${{ github.workspace }}:/var/www/html"
+          - "${{ github.workspace }}/web:/var/www/html/public"
         env:
-          # serversideup/php
-          NGINX_WEBROOT: "/var/www/html/web"
           # PHAGRANCY
           PHAGRANCY_API_TOKEN: "token"
           PHAGRANCY_STORAGE_PATH: "/tmp"
     strategy:
       fail-fast: false
       matrix:
-        php: [7.4, 8.0]
+        php: [8.1, 8.2, 8.3, 8.4, 8.5]
         experimental: [false]
         include:
-          - php: 7.4
+          - php: 8.2
             analysis: true
-          - php: 8.1
-            experimental: true
 
     steps:
       - name: Checkout
@@ -59,11 +56,3 @@ jobs:
         run: |
           packer plugins install github.com/hashicorp/vagrant
           composer ci-test
-
-      - name: Code Climate Coverage Action Test
-        uses: MartinNuc/codeclimate-action@1
-        if: matrix.analysis
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TEST_REPORTER_ID }}
-        with:
-          coverageCommand: composer test-coverage

@@ -9,11 +9,12 @@ namespace Phagrancy\Integration;
 
 use Phagrancy\Http\Response;
 use Phagrancy\TestCase\Integration;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ApiTest
 	extends Integration
 {
-	public function provideNotFoundRoutes(): array
+	public static function provideNotFoundRoutes(): array
 	{
 		return [
 			// scope index
@@ -29,7 +30,7 @@ class ApiTest
 		];
 	}
 
-	public function provideGoodRoutes(): array
+	public static function provideGoodRoutes(): array
 	{
 		return [
 			['GET', 'test', Response\Api\BoxList::class, ['username' => 'test', 'boxes' => ['test']]],
@@ -97,6 +98,7 @@ class ApiTest
 	/**
 	 * @dataProvider provideGoodRoutes
 	 */
+	#[DataProvider('provideGoodRoutes')]
 	public function testRoutes($method, $path, $responseClass, $expected)
 	{
 		$response = $this->runApp($method, "/api/v1/box/{$path}");
@@ -109,6 +111,7 @@ class ApiTest
 	/**
 	 * @dataProvider provideNotFoundRoutes
 	 */
+	#[DataProvider('provideNotFoundRoutes')]
 	public function testRoutesReturnNotFound($method, $path)
 	{
 		$response = $this->runApp($method, "/api/v1/box/{$path}");
@@ -303,7 +306,7 @@ class ApiTest
 		\MockPhpStream::restore();
 
 		$path = "/api/v1/box/test/something/version/1.0.0/provider/virtualtest/amd64/upload";
-		$signature = hash_hmac('sha256', "PUT\n{$path}", null);
+		$signature = hash_hmac('sha256', "PUT\n{$path}", '');
 		self::assertInstanceOf(Response\Json::class, $response);
 		self::assertMessageBodyEqualsJsonArray($response, [
 			'upload_path' => "http://localhost{$path}?X-Phagrancy-Signature=" . $signature,

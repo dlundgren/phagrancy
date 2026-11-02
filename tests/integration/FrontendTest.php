@@ -9,11 +9,12 @@ namespace Phagrancy\Integration;
 
 use Phagrancy\Http\Response;
 use Phagrancy\TestCase\Integration;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class FrontendTest
 	extends Integration
 {
-	public function provideNotFoundRoutes()
+	public static function provideNotFoundRoutes()
 	{
 		return [
 			// scope doesn't exist
@@ -30,7 +31,7 @@ class FrontendTest
 		];
 	}
 
-	public function provideGoodRoutes()
+	public static function provideGoodRoutes()
 	{
 		return [
 			['GET', '', Response\Json::class, null],
@@ -72,6 +73,7 @@ class FrontendTest
 	/**
 	 * @dataProvider provideGoodRoutes
 	 */
+	#[DataProvider('provideGoodRoutes')]
 	public function testRoutes($method, $path, $responseClass, $expected)
 	{
 		$response = $this->runApp($method, $path);
@@ -84,6 +86,7 @@ class FrontendTest
 	/**
 	 * @dataProvider provideNotFoundRoutes
 	 */
+	#[DataProvider('provideNotFoundRoutes')]
 	public function testRoutesReturnNotFound($method, $path)
 	{
 		$response = $this->runApp($method, $path);
