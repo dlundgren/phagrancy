@@ -1,24 +1,21 @@
-version: '3'
-
 services:
-  nginx:
-    image: phagrancy-nginx:latest
-    container_name: phagrancy-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      phagrancy:
-
-  php-fpm:
-    image: phagrancy-php-fpm:latest
-    container_name: phagrancy-php-fpm
-    volumes:
-      - "./.env_phagrancy:/srv/phagrancy/.env"
-      - "./boxes:/srv/phagrancy/boxes"
-    networks:
-      phagrancy:
-
-networks:
   phagrancy:
-    driver: bridge
+    image: ghcr.io/dlundgren/phagrancy:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "${HTTPS_PORT:-8443}:8443"
+    environment:
+      SSL_MODE: "full"
+      NGINX_CLIENT_MAX_BODY_SIZE: "10G"
+      PHAGRANCY_API_TOKEN: "change-me-before-running"
+      PHAGRANCY_STORAGE_PATH: "/var/www/html/storage/boxes"
+    volumes:
+      - phagrancy_storage:/var/www/html/storage/boxes
+      # uncomment this if you want a .env file instead of the environment
+      #- ./.env:/var/www/html/.env:ro
+    restart: unless-stopped
+
+volumes:
+  phagrancy_storage:
