@@ -1,7 +1,7 @@
 ---
 services:
   app:
-    image: serversideup/php:${PHP_VERSION:-8.4}-fpm-nginx
+    image: serversideup/php:${PHP_VERSION:-8.4}-fpm-nginx-alpine
     container_name: phagrancy-app
     ports:
       - "${TEST_PORT:-8080}:8080"
