@@ -2,10 +2,12 @@ name: Build and Publish Docker Image
 
 on:
   push:
-    branches:
-      - master
     tags:
       - '*.*.*'
+  workflow_run:
+    workflows: [Tests]
+    types: [completed]
+    branches: [master]
 
 jobs:
   build-and-push:
@@ -30,6 +32,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
